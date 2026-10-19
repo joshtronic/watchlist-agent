@@ -330,6 +330,7 @@ Soft, confident, and calm: rounded rectangles with a 44px touch floor and a gent
 - **Disabled:** the field keeps its look and takes a `not-allowed` cursor; the buttons beside it go to the disabled treatment.
 
 ### Alerts
+- **Logo mark:** the 🤖 emoji in an Oat (`muted-fill`) disc, 1.6em square at 0.75em of its heading's size, decorative (`aria-hidden`), placed before "Watchlist Agent" in both the gate and shell headings. The same robot is the SVG favicon (`public/favicon.svg`). It is a user-pinned brand choice; the emoji renders in each platform's own emoji style.
 - **Error alert:** Blush Tint background, Deep Brick text, 14px radius, padding 0.75rem 1rem, `role="alert"`. Placed directly below the action it reports on.
 - **Inline confirmation:** destructive confirmation replaces the triggering button in place instead of opening a modal. A full-width Blush Tint row (20px radius) with the consequence in Deep Brick at weight 600, then Cancel (quiet, on the card colour) and the danger button. Focus moves to Cancel on open and back to the trigger on cancel.
 

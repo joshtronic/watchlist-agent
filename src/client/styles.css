@@ -119,6 +119,25 @@ h2 {
 	font-weight: 650;
 }
 
+/* Logo mark: the robot in a soft disc, sized from the heading it sits in. */
+h1:has(.logo-mark) {
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+}
+
+.logo-mark {
+	display: inline-grid;
+	place-items: center;
+	flex: none;
+	width: 1.6em;
+	height: 1.6em;
+	border-radius: var(--radius-pill);
+	background: var(--muted-fill);
+	font-size: 0.75em;
+	line-height: 1;
+}
+
 .muted {
 	color: var(--ink-soft);
 }

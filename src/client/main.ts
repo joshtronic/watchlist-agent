@@ -25,7 +25,7 @@ async function showGate() {
 	root.innerHTML = `
 		<main id="gate" class="gate">
 			<section class="card" aria-labelledby="gate-title">
-				<h1 id="gate-title">Watchlist Agent</h1>
+				<h1 id="gate-title"><span class="logo-mark" aria-hidden="true">🤖</span>Watchlist Agent</h1>
 				<p class="muted">
 					Keep an eye on a few stocks and ask about them in plain words.
 				</p>
@@ -122,7 +122,7 @@ function showApp(watchlist: string[]) {
 	root.innerHTML = `
 		<div class="shell">
 			<header class="shell-header">
-				<h1>Watchlist Agent</h1>
+				<h1><span class="logo-mark" aria-hidden="true">🤖</span>Watchlist Agent</h1>
 				<div id="logout"></div>
 			</header>
 			<main class="shell-main">
