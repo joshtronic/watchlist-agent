@@ -31,13 +31,13 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase B — Shell (commits to `main`)
 
-- [ ] **Scaffold the project**, with Node 26 via `.nvmrc`. Set up:
+- [x] **Scaffold the project**, with Node 26 via `.nvmrc`. Set up:
   - `package.json` (ESM, `engines.node >= 26`);
   - strict TypeScript;
   - Biome;
   - Vite + `@cloudflare/vite-plugin`;
   - dev dependencies: `wrangler`, `vitest`, `@cloudflare/vitest-plugin`.
-- [ ] **Confirm the toolchain runs on Node 26:** clean install, test runner, build, and
+- [x] **Confirm the toolchain runs on Node 26:** clean install, test runner, build, and
       `wrangler dev`.
 - [ ] **npm scripts:** `dev`, `build`, `test`, `test:live` (empty suite for now), `lint`,
       `format`, `typecheck`, `deploy`.
@@ -55,7 +55,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
   - When the var is missing, it reports `"unknown"`, never an empty string.
 - [x] **Test first:** stub `SessionDO` ping, proving the DO binding and SQLite storage work in
       the test runtime.
-- [ ] **Placeholder frontend:** `index.html` + a small TS entry, proving the Vite build and asset
+- [x] **Placeholder frontend:** `index.html` + a small TS entry, proving the Vite build and asset
       serving.
 - [ ] **First manual deploy:** `npm run deploy`.
   - Verify `https://watchlist.fetchlogic.com/api/health` returns the deployed commit.

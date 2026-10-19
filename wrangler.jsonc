@@ -10,6 +10,9 @@
 	"preview_urls": false,
 	"routes": [{ "pattern": "watchlist.fetchlogic.com", "custom_domain": true }],
 
+	// Static assets come from the Vite client build; the worker handles /api.
+	"assets": { "run_worker_first": ["/api/*"] },
+
 	"durable_objects": {
 		"bindings": [{ "name": "SESSION", "class_name": "SessionDO" }]
 	},
