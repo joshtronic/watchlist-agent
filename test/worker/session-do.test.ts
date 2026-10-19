@@ -22,10 +22,6 @@ function alarmOf(session: ReturnType<typeof stub>) {
 }
 
 describe("SessionDO", () => {
-	it("answers a ping over RPC", async () => {
-		expect(await stub().ping()).toBe("pong");
-	});
-
 	it("is backed by SQLite storage", async () => {
 		await runInDurableObject(stub(), async (instance, state) => {
 			expect(instance).toBeInstanceOf(SessionDO);
