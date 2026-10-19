@@ -53,7 +53,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
     (`wrangler deploy --var GIT_COMMIT:<sha>`).
   - Locally, `npm run deploy` injects `git rev-parse HEAD`; in CI it's `github.sha`.
   - When the var is missing, it reports `"unknown"`, never an empty string.
-- [ ] **Test first:** stub `SessionDO` ping, proving the DO binding and SQLite storage work in
+- [x] **Test first:** stub `SessionDO` ping, proving the DO binding and SQLite storage work in
       the test runtime.
 - [ ] **Placeholder frontend:** `index.html` + a small TS entry, proving the Vite build and asset
       serving.

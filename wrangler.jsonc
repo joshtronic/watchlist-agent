@@ -10,6 +10,11 @@
 	"preview_urls": false,
 	"routes": [{ "pattern": "watchlist.fetchlogic.com", "custom_domain": true }],
 
+	"durable_objects": {
+		"bindings": [{ "name": "SESSION", "class_name": "SessionDO" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["SessionDO"] }],
+
 	"vars": {
 		// Injected at deploy: `wrangler deploy --var GIT_COMMIT:<sha>`.
 		"GIT_COMMIT": "",
