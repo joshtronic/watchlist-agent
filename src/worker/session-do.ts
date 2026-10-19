@@ -11,10 +11,6 @@ export interface SessionRecord {
 }
 
 export class SessionDO extends DurableObject<Env> {
-	async ping(): Promise<string> {
-		return "pong";
-	}
-
 	async create(now: number): Promise<void> {
 		if (await this.get()) return;
 
