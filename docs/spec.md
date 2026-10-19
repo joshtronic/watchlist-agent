@@ -96,6 +96,27 @@ SessionDO (SQLite-backed) — one per session
 - The Worker is a thin router. It handles static assets, cookie parsing and creating sessions
   after Turnstile, and forwards everything else to the session's DO.
 
+### 4.1 Durable Object storage
+
+Each session's DO has its own private storage. We use the DO key-value API (stored in SQLite
+on this backend) with JSON values. The TypeScript types are the schema; there are no SQL
+tables and no data migrations.
+
+| Key            | Value                                                  | Notes                                                     |
+|----------------|--------------------------------------------------------|-----------------------------------------------------------|
+| `session`      | `{ disclaimerAcceptedAt, lastActive, cookieIssuedAt }` | Epoch ms. Absent = no session.                            |
+| `watchlist`    | `string[]`                                             | Uppercase, max 10, in order.                              |
+| `history`      | `{ role, text, at }[]`                                 | Last 10 exchanges, prose only. Role is user or assistant. |
+| `pendingOffer` | `{ symbols: string[] }`                                | Absent when there's no offer.                             |
+| `rateLimit`    | `number[]`                                             | Request times in the last 60 s.                           |
+
+- **Shape changes:** read old values with defaults. If a change can't be read compatibly, a
+  session can be wiped. That's acceptable for this POC, and the "start over" path already
+  exists.
+- **Not to be confused with** the Wrangler `migrations` in `wrangler.jsonc`, which only
+  create, rename or delete DO classes.
+- **Revisit SQL tables** if history grows into something to search or page through.
+
 ## 5. HTTP API
 
 All `/api/*` routes except `POST /api/session` require a valid session cookie. Without one they
