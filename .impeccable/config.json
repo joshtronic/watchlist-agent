@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "hind",
+        "createdAt": "2026-10-19T23:18:02.911Z",
+        "reason": "agent decided: same unchosen decision sketch, lowercase form of the font-family value"
+      }
+    ]
+  }
+}

@@ -24,3 +24,7 @@ npm-debug.log*
 
 # OS / editor
 .DS_Store
+
+# Impeccable scratch output (decision sketches, review captures)
+.impeccable/mocks/
+.impeccable/review/

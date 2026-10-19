@@ -1,0 +1,444 @@
+/* Warm consumer world: soft cards, plain words, and one bright colour only
+   where something can be pressed. */
+
+:root {
+	--ground: #f5efe8;
+	--card: #ffffff;
+	--ink: #24211d;
+	--ink-soft: #5e574e;
+	--line: #e7ddd1;
+	--action: #3b5bdb;
+	--action-ink: #ffffff;
+	--action-hover: #2f4bc0;
+	--focus: #3b5bdb;
+	--up: #2f7a4d;
+	--down: #b4442f;
+	--danger: #b4442f;
+	--muted-fill: #eee6dc;
+
+	--radius-card: 20px;
+	--radius-control: 14px;
+	--radius-pill: 999px;
+
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-5: 1.5rem;
+	--space-6: 2rem;
+	--space-7: 3rem;
+
+	--column: 46rem;
+	--shadow-card:
+		0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.06);
+	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+	color-scheme: light;
+	font-family: "Figtree Variable", system-ui, sans-serif;
+	font-size: 100%;
+	line-height: 1.5;
+	color: var(--ink);
+	background: var(--ground);
+	caret-color: var(--action);
+	accent-color: var(--action);
+	scrollbar-color: #cdbfae var(--ground);
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	min-height: 100dvh;
+}
+
+::selection {
+	background: #d6ddfa;
+	color: var(--ink);
+}
+
+:focus-visible {
+	outline: 3px solid var(--focus);
+	outline-offset: 2px;
+	border-radius: 6px;
+}
+
+h1,
+h2,
+p {
+	margin: 0;
+}
+
+p {
+	text-wrap: pretty;
+}
+
+h1 {
+	font-size: 1.375rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+h2 {
+	font-size: 1.0625rem;
+	font-weight: 650;
+}
+
+.muted {
+	color: var(--ink-soft);
+}
+
+.fine-print {
+	font-size: 0.8125rem;
+	color: var(--ink-soft);
+}
+
+/* Cards: one idea each. */
+
+.card {
+	background: var(--card);
+	border-radius: var(--radius-card);
+	box-shadow: var(--shadow-card);
+	padding: var(--space-5);
+}
+
+.card > * + * {
+	margin-top: var(--space-3);
+}
+
+/* Buttons. The action colour is reserved for things that can be done now. */
+
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2);
+	min-height: 2.75rem;
+	padding: 0 var(--space-5);
+	border: 0;
+	border-radius: var(--radius-control);
+	font: inherit;
+	font-weight: 650;
+	cursor: pointer;
+	transition:
+		transform 160ms var(--ease-out),
+		background-color 160ms var(--ease-out);
+}
+
+.button:active:not(:disabled) {
+	transform: scale(0.97);
+}
+
+.button-primary {
+	background: var(--action);
+	color: var(--action-ink);
+}
+
+.button-primary:hover:not(:disabled) {
+	background: var(--action-hover);
+}
+
+.button-quiet {
+	background: transparent;
+	color: var(--ink);
+	box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.button-quiet:hover:not(:disabled) {
+	background: var(--muted-fill);
+}
+
+.button-danger {
+	background: transparent;
+	color: var(--danger);
+	box-shadow: inset 0 0 0 1px var(--danger);
+}
+
+.button-danger:hover:not(:disabled) {
+	background: var(--card);
+}
+
+.button:disabled {
+	background: var(--muted-fill);
+	color: #9a8f82;
+	box-shadow: none;
+	cursor: not-allowed;
+}
+
+.button-icon {
+	width: 2.75rem;
+	padding: 0;
+}
+
+.button svg {
+	width: 1.25rem;
+	height: 1.25rem;
+	flex: none;
+}
+
+/* Landing gate. */
+
+.gate {
+	min-height: 100dvh;
+	display: grid;
+	place-items: center;
+	padding: var(--space-6) var(--space-4);
+}
+
+.gate .card {
+	width: min(100%, 30rem);
+	padding: var(--space-6);
+}
+
+.gate h1 {
+	font-size: 2.625rem;
+	font-weight: 650;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+
+.gate .card > p:first-of-type {
+	margin-top: var(--space-2);
+}
+
+.gate-disclaimer {
+	margin-top: var(--space-5);
+	padding: var(--space-4);
+	border-radius: var(--radius-control);
+	background: var(--ground);
+}
+
+.gate-disclaimer > * + * {
+	margin-top: var(--space-2);
+}
+
+.checkbox {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	margin-top: var(--space-5);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.checkbox input {
+	width: 1.25rem;
+	height: 1.25rem;
+	margin: 0;
+}
+
+.gate-turnstile {
+	min-height: 65px;
+	margin-top: var(--space-4);
+}
+
+.gate .button-primary,
+.gate .button:disabled {
+	width: 100%;
+	margin-top: var(--space-4);
+}
+
+.alert {
+	margin-top: var(--space-4);
+	padding: var(--space-3) var(--space-4);
+	border-radius: var(--radius-control);
+	background: #f8e7e3;
+	color: #7d2c1c;
+}
+
+/* Signed-in shell: header, one centred column, input bar pinned below. */
+
+.shell {
+	min-height: 100dvh;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto 1fr auto;
+}
+
+.shell-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-4);
+	flex-wrap: wrap;
+	width: min(100%, var(--column) + 2 * var(--space-4));
+	margin: 0 auto;
+	padding: var(--space-5) var(--space-4) var(--space-4);
+}
+
+.shell-header h1 {
+	min-height: 2.75rem;
+	display: flex;
+	align-items: center;
+}
+
+/* The conversation takes whatever height remains above the composer. */
+.shell-main {
+	width: min(100%, var(--column) + 2 * var(--space-4));
+	margin: 0 auto;
+	padding: 0 var(--space-4) var(--space-3);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.card-heading {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--space-3);
+}
+
+.card-heading .muted {
+	font-size: 0.9375rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.conversation {
+	flex: 1;
+	display: grid;
+	place-items: center;
+	min-height: 12rem;
+}
+
+.watchlist-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.watchlist-pills li {
+	padding: var(--space-1) var(--space-3);
+	border-radius: var(--radius-pill);
+	background: var(--muted-fill);
+	font-weight: 650;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+.conversation-empty {
+	text-align: center;
+}
+
+.composer {
+	position: sticky;
+	bottom: 0;
+	padding: var(--space-3) var(--space-4) var(--space-4);
+	background: var(--ground);
+}
+
+.composer-bar {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	width: min(100%, var(--column));
+	margin: 0 auto;
+	padding: var(--space-2);
+	border-radius: calc(var(--radius-control) + var(--space-2));
+	background: var(--card);
+	box-shadow: var(--shadow-card);
+}
+
+.composer-bar input {
+	flex: 1;
+	min-width: 0;
+	min-height: 2.75rem;
+	padding: 0 var(--space-3);
+	border: 0;
+	border-radius: var(--radius-control);
+	font: inherit;
+	color: var(--ink);
+	background: transparent;
+}
+
+.composer-bar input::placeholder {
+	color: #766b5e;
+}
+
+.composer-bar input:disabled {
+	cursor: not-allowed;
+}
+
+.composer .fine-print {
+	width: min(100%, var(--column));
+	margin: var(--space-2) auto 0;
+	text-align: center;
+}
+
+/* Logout lives in the header; its confirmation replaces the button inline. */
+
+.logout {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+/* While confirming, the control takes the full header width as an alert row. */
+.logout:has(.logout-confirmation:not([hidden])) {
+	flex-basis: 100%;
+}
+
+.logout-confirmation {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	flex-wrap: wrap;
+	width: 100%;
+	padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+	border-radius: var(--radius-card);
+	background: #f8e7e3;
+}
+
+.logout-confirmation p {
+	flex: 1 1 16rem;
+	color: #7d2c1c;
+	font-weight: 600;
+}
+
+.logout-confirmation .button-quiet {
+	background: var(--card);
+}
+
+.logout-confirmation[hidden],
+.button[hidden] {
+	display: none;
+}
+
+/* Narrow screens: tighter gate padding so Turnstile's 300px minimum fits, and
+   Send keeps its icon and accessible name but drops the label. */
+@media (max-width: 30rem) {
+	.gate {
+		padding: var(--space-5) var(--space-3);
+	}
+
+	.gate .card {
+		padding: var(--space-5) var(--space-4);
+	}
+
+	.composer-bar .button-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.composer-bar .button-primary {
+		width: 2.75rem;
+		padding: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.button {
+		transition: none;
+	}
+}

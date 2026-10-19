@@ -1,4 +1,7 @@
+import "@fontsource-variable/figtree";
+import "./styles.css";
 import { canSubmit, type GateState, gateErrorMessage } from "./gate";
+import { micIcon, sendIcon } from "./icons";
 import { clearLocalData } from "./local-data";
 import { mountLogout } from "./logout";
 import { createSession, getConfig, getSession, logout } from "./session-api";
@@ -20,21 +23,35 @@ async function start() {
 
 async function showGate() {
 	root.innerHTML = `
-		<section id="gate">
-			<h1>Watchlist Agent</h1>
-			<p>
-				This is not financial advice. Nothing here is a recommendation to
-				buy, sell or hold any security. This site uses a cookie to keep your
-				session.
-			</p>
-			<label>
-				<input id="gate-accept" type="checkbox" />
-				I understand
-			</label>
-			<div id="gate-turnstile"></div>
-			<button id="gate-submit" type="button" disabled>Continue</button>
-			<p id="gate-error" role="alert" hidden></p>
-		</section>
+		<main id="gate" class="gate">
+			<section class="card" aria-labelledby="gate-title">
+				<h1 id="gate-title">Watchlist Agent</h1>
+				<p class="muted">
+					Keep an eye on a few stocks and ask about them in plain words.
+				</p>
+				<div class="gate-disclaimer">
+					<p>
+						This is not financial advice. Nothing here is a recommendation to
+						buy, sell or hold any security.
+					</p>
+					<p>This site uses a cookie to keep your session.</p>
+				</div>
+				<label class="checkbox">
+					<input id="gate-accept" type="checkbox" />
+					I understand
+				</label>
+				<div id="gate-turnstile" class="gate-turnstile"></div>
+				<button
+					id="gate-submit"
+					class="button button-primary"
+					type="button"
+					disabled
+				>
+					Continue
+				</button>
+				<p id="gate-error" class="alert" role="alert" hidden></p>
+			</section>
+		</main>
 	`;
 
 	const accept = find<HTMLInputElement>("#gate-accept");
@@ -61,6 +78,12 @@ async function showGate() {
 		turnstile = loaded;
 		widgetId = turnstile.render(find("#gate-turnstile"), {
 			sitekey: config.turnstileSiteKey,
+			theme: "light",
+			// Turnstile can't shrink below 300px; use its compact form where that
+			// won't fit inside the card.
+			size: matchMedia("(max-width: 22.25rem)").matches
+				? "compact"
+				: "flexible",
 			callback: (token) => {
 				state.token = token;
 				update();
@@ -97,17 +120,56 @@ async function showGate() {
 
 function showApp(watchlist: string[]) {
 	root.innerHTML = `
-		<header>
-			<h1>Watchlist Agent</h1>
-			<div id="logout"></div>
-		</header>
-		<p id="watchlist-summary"></p>
-		<p id="logout-error" role="alert" hidden></p>
+		<div class="shell">
+			<header class="shell-header">
+				<h1>Watchlist Agent</h1>
+				<div id="logout"></div>
+			</header>
+			<main class="shell-main">
+				<p id="logout-error" class="alert" role="alert" hidden></p>
+				<section class="card" aria-labelledby="watchlist-title">
+					<div class="card-heading">
+						<h2 id="watchlist-title">Your watchlist</h2>
+						<span id="watchlist-count" class="muted"></span>
+					</div>
+					<div id="watchlist-body"></div>
+				</section>
+				<section class="card conversation" aria-label="Conversation">
+					<div class="conversation-empty">
+						<h2>Chat is on its way</h2>
+						<p class="muted">
+							Soon you'll be able to ask how your stocks are doing, right here.
+						</p>
+					</div>
+				</section>
+			</main>
+			<footer class="composer">
+				<form class="composer-bar" aria-label="Ask about your stocks">
+					<input
+						type="text"
+						aria-label="Message"
+						placeholder="Ask about your stocks…"
+						disabled
+					/>
+					<button
+						class="button button-icon button-quiet"
+						type="button"
+						aria-label="Speak your question"
+						disabled
+					>
+						${micIcon}
+					</button>
+					<button class="button button-primary" type="submit" disabled>
+						<span class="button-label">Send</span>
+						${sendIcon}
+					</button>
+				</form>
+				<p class="fine-print">Not financial advice.</p>
+			</footer>
+		</div>
 	`;
-	find("#watchlist-summary").textContent =
-		watchlist.length === 0
-			? "Your watchlist is empty."
-			: `Watching: ${watchlist.join(", ")}`;
+	find("#watchlist-count").textContent = `${watchlist.length} of 10`;
+	renderWatchlist(find("#watchlist-body"), watchlist);
 
 	mountLogout(find("#logout"), {
 		onConfirm: async () => {
@@ -125,6 +187,26 @@ function showApp(watchlist: string[]) {
 			await showGate();
 		},
 	});
+}
+
+function renderWatchlist(container: HTMLElement, watchlist: string[]) {
+	if (watchlist.length === 0) {
+		const empty = document.createElement("p");
+		empty.className = "muted";
+		empty.textContent =
+			"Up to 10 US stocks or ETFs. You'll add them by asking, once chat is ready.";
+		container.replaceChildren(empty);
+		return;
+	}
+
+	const list = document.createElement("ul");
+	list.className = "watchlist-pills";
+	for (const symbol of watchlist) {
+		const item = document.createElement("li");
+		item.textContent = symbol;
+		list.append(item);
+	}
+	container.replaceChildren(list);
 }
 
 function find<T extends HTMLElement = HTMLElement>(selector: string): T {
