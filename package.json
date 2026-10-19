@@ -11,6 +11,7 @@
 		"@biomejs/biome": "^2.5.15",
 		"@cloudflare/vite-plugin": "^1.64.0",
 		"@cloudflare/vitest-plugin": "^1.4.5",
+		"happy-dom": "^21.0.3",
 		"typescript": "^7.0.2",
 		"vite": "^8.3.4",
 		"vitest": "^5.0.5",
