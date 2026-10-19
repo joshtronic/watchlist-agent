@@ -23,6 +23,8 @@
 		"format": "biome check --write .",
 		"test": "vitest run",
 		"dev": "vite dev",
-		"build": "vite build"
+		"build": "vite build",
+		"test:live": "vitest run --config vitest.live.config.ts",
+		"deploy": "npm run build && wrangler deploy --var GIT_COMMIT:$(git rev-parse HEAD)"
 	}
 }

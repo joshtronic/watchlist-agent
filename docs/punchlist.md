@@ -39,7 +39,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
   - dev dependencies: `wrangler`, `vitest`, `@cloudflare/vitest-plugin`.
 - [x] **Confirm the toolchain runs on Node 26:** clean install, test runner, build, and
       `wrangler dev`.
-- [ ] **npm scripts:** `dev`, `build`, `test`, `test:live` (empty suite for now), `lint`,
+- [x] **npm scripts:** `dev`, `build`, `test`, `test:live` (empty suite for now), `lint`,
       `format`, `typecheck`, `deploy`.
 - [ ] **`wrangler.jsonc`:**
   - static assets, `AI` binding, `SESSION` DO binding with the `new_sqlite_classes` migration;
@@ -57,22 +57,21 @@ tokens into the Claude session — set them in your own terminal or the dashboar
       the test runtime.
 - [x] **Placeholder frontend:** `index.html` + a small TS entry, proving the Vite build and asset
       serving.
-- [ ] **First manual deploy:** `npm run deploy`.
-  - Verify `https://watchlist.fetchlogic.com/api/health` returns the deployed commit.
-  - Then Josh sets the production secrets (Phase A).
+- [x] ~~**First manual deploy**~~ — dropped; the first deploy goes through CI (Phase C).
+      Josh sets the production secrets (Phase A) once it lands.
 
 ## Phase C — GitHub Actions
 
-- [ ] **CI workflow on pull requests and pushes to `main`:**
-  - `npm ci`, `lint` (Biome), `typecheck`, `test`, `build`.
+- [x] **CI workflow on pull requests and pushes to `main`:**
+  - `npm ci`, types check, `lint` (Biome), `typecheck`, `test`, `build`.
   - Node version read from `.nvmrc`; npm cache enabled.
-- [ ] **Deploy workflow on push to `main`, after CI passes:**
-  - Build, then `wrangler deploy --var GIT_COMMIT:${{ github.sha }}`.
+- [x] **Deploy workflow on push to `main`, after CI passes:**
+  - `npm run deploy` (build, then `wrangler deploy --var GIT_COMMIT:<HEAD sha>`).
   - Uses the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets.
-- [ ] **Post-deploy smoke check:** a deploy step polls `/api/health` until `commit` matches
+- [x] **Post-deploy smoke check:** a deploy step polls `/api/health` until `commit` matches
       `github.sha`, and fails the job if it never does.
-- [ ] **Verify end to end:** push a trivial change to `main` and watch CI, the deploy and the
-      smoke check go green.
+- [ ] **Verify end to end:** push to `main` and watch CI, the deploy and the smoke check go
+      green.
 - [ ] **Switch to branches + PRs from here on.** Optionally (Josh), protect `main` with required
       CI checks.
 
