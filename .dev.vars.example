@@ -1,0 +1,4 @@
+# Copy to .dev.vars and fill in. Production values are set with `npx wrangler secret put <NAME>`.
+ALPACA_API_KEY=
+ALPACA_SECRET_KEY=
+TURNSTILE_SECRET_KEY=
