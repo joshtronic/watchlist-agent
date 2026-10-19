@@ -104,7 +104,7 @@ describe("POST /api/session", () => {
 
 			const res = await call("POST", "/api/session", { body });
 
-			expect(res.status).toBe(400);
+			expect(res.status).toBe(403);
 			expect(await res.json()).toEqual({ error: "disclaimer_required" });
 			expect(res.headers.has("set-cookie")).toBe(false);
 			expect(fetchSpy).not.toHaveBeenCalled();
