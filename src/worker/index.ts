@@ -13,6 +13,8 @@ export default {
 					ok: true,
 					commit: env.GIT_COMMIT || "unknown",
 				});
+			case "GET /api/config":
+				return Response.json({ turnstileSiteKey: env.TURNSTILE_SITE_KEY });
 			case "POST /api/session":
 				return createSession(request, env);
 			case "GET /api/session":

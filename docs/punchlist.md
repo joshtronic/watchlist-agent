@@ -77,13 +77,13 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 1 — Session
 
-- [ ] Landing gate: disclaimer + "I understand" + Turnstile, and `POST /api/session` with
+- [x] Landing gate: disclaimer + "I understand" + Turnstile, and `POST /api/session` with
       siteverify.
-- [ ] Session cookie (1-year sliding expiry) → DO session record (`disclaimerAcceptedAt`).
-- [ ] `GET /api/session`, and `401 no_session` handling for missing or unknown cookies.
-- [ ] Logout: in-page confirmation, then `DELETE /api/session` (`deleteAll`, expire the cookie)
+- [x] Session cookie (1-year sliding expiry) → DO session record (`disclaimerAcceptedAt`).
+- [x] `GET /api/session`, and `401 no_session` handling for missing or unknown cookies.
+- [x] Logout: in-page confirmation, then `DELETE /api/session` (`deleteAll`, expire the cookie)
       and clear localStorage on the client.
-- [ ] Inactivity alarm (wipe after 365 days).
+- [x] Inactivity alarm (wipe after 365 days).
 
 ## Phase 2 — Watchlist core
 
