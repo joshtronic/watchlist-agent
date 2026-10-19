@@ -78,7 +78,7 @@ async function showGate() {
 		turnstile = loaded;
 		widgetId = turnstile.render(find("#gate-turnstile"), {
 			sitekey: config.turnstileSiteKey,
-			theme: "light",
+			theme: "auto",
 			// Turnstile can't shrink below 300px; use its compact form where that
 			// won't fit inside the card.
 			size: matchMedia("(max-width: 22.25rem)").matches

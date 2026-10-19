@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-19T23:17:48+00:00",
+  "generatedAt": "2026-10-19T23:26:00+00:00",
   "title": "Design System: Watchlist Agent",
   "extensions": {
     "colorMeta": {
@@ -243,6 +243,296 @@
         "role": "neutral",
         "displayName": "Selection Wash",
         "canonical": "#d6ddfa"
+      },
+      "scrollbar": {
+        "role": "neutral",
+        "displayName": "Scrollbar Sand",
+        "canonical": "#cdbfae",
+        "tonalRamp": [
+          "oklch(15% 0.028 72.7)",
+          "oklch(25% 0.028 72.7)",
+          "oklch(38% 0.028 72.7)",
+          "oklch(50% 0.028 72.7)",
+          "oklch(62% 0.028 72.7)",
+          "oklch(75% 0.028 72.7)",
+          "oklch(86% 0.028 72.7)",
+          "oklch(95% 0.028 72.7)"
+        ]
+      },
+      "shadow-tint": {
+        "role": "neutral",
+        "displayName": "Shadow Tint",
+        "canonical": "rgb(60 40 20 / 0.06)"
+      },
+      "ground-dark": {
+        "role": "neutral",
+        "displayName": "Night Paper",
+        "canonical": "#1c1916",
+        "tonalRamp": [
+          "oklch(15% 0.007 67.4)",
+          "oklch(25% 0.007 67.4)",
+          "oklch(38% 0.007 67.4)",
+          "oklch(50% 0.007 67.4)",
+          "oklch(62% 0.007 67.4)",
+          "oklch(75% 0.007 67.4)",
+          "oklch(86% 0.007 67.4)",
+          "oklch(95% 0.007 67.4)"
+        ]
+      },
+      "card-dark": {
+        "role": "neutral",
+        "displayName": "Lifted Charcoal",
+        "canonical": "#27231f",
+        "tonalRamp": [
+          "oklch(15% 0.009 67.4)",
+          "oklch(25% 0.009 67.4)",
+          "oklch(38% 0.009 67.4)",
+          "oklch(50% 0.009 67.4)",
+          "oklch(62% 0.009 67.4)",
+          "oklch(75% 0.009 67.4)",
+          "oklch(86% 0.009 67.4)",
+          "oklch(95% 0.009 67.4)"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Cream Ink",
+        "canonical": "#f2ece4",
+        "tonalRamp": [
+          "oklch(15% 0.013 75.4)",
+          "oklch(25% 0.013 75.4)",
+          "oklch(38% 0.013 75.4)",
+          "oklch(50% 0.013 75.4)",
+          "oklch(62% 0.013 75.4)",
+          "oklch(75% 0.013 75.4)",
+          "oklch(86% 0.013 75.4)",
+          "oklch(95% 0.013 75.4)"
+        ]
+      },
+      "ink-soft-dark": {
+        "role": "neutral",
+        "displayName": "Soft Ink (dark)",
+        "canonical": "#b9aea0",
+        "tonalRamp": [
+          "oklch(15% 0.023 74.0)",
+          "oklch(25% 0.023 74.0)",
+          "oklch(38% 0.023 74.0)",
+          "oklch(50% 0.023 74.0)",
+          "oklch(62% 0.023 74.0)",
+          "oklch(75% 0.023 74.0)",
+          "oklch(86% 0.023 74.0)",
+          "oklch(95% 0.023 74.0)"
+        ]
+      },
+      "line-dark": {
+        "role": "neutral",
+        "displayName": "Hairline Umber",
+        "canonical": "#3d362e",
+        "tonalRamp": [
+          "oklch(15% 0.017 70.9)",
+          "oklch(25% 0.017 70.9)",
+          "oklch(38% 0.017 70.9)",
+          "oklch(50% 0.017 70.9)",
+          "oklch(62% 0.017 70.9)",
+          "oklch(75% 0.017 70.9)",
+          "oklch(86% 0.017 70.9)",
+          "oklch(95% 0.017 70.9)"
+        ]
+      },
+      "muted-fill-dark": {
+        "role": "neutral",
+        "displayName": "Roast Fill",
+        "canonical": "#36302a",
+        "tonalRamp": [
+          "oklch(15% 0.014 67.3)",
+          "oklch(25% 0.014 67.3)",
+          "oklch(38% 0.014 67.3)",
+          "oklch(50% 0.014 67.3)",
+          "oklch(62% 0.014 67.3)",
+          "oklch(75% 0.014 67.3)",
+          "oklch(86% 0.014 67.3)",
+          "oklch(95% 0.014 67.3)"
+        ]
+      },
+      "action-dark": {
+        "role": "primary",
+        "displayName": "Action Blue (dark)",
+        "canonical": "#4263eb",
+        "tonalRamp": [
+          "oklch(15% 0.208 268.4)",
+          "oklch(25% 0.208 268.4)",
+          "oklch(38% 0.208 268.4)",
+          "oklch(50% 0.208 268.4)",
+          "oklch(62% 0.208 268.4)",
+          "oklch(75% 0.208 268.4)",
+          "oklch(86% 0.208 268.4)",
+          "oklch(95% 0.208 268.4)"
+        ]
+      },
+      "action-ink-dark": {
+        "role": "primary",
+        "displayName": "Action Ink (dark)",
+        "canonical": "#ffffff"
+      },
+      "action-hover-dark": {
+        "role": "primary",
+        "displayName": "Pressed Blue (dark)",
+        "canonical": "#3553d0",
+        "tonalRamp": [
+          "oklch(15% 0.196 268.0)",
+          "oklch(25% 0.196 268.0)",
+          "oklch(38% 0.196 268.0)",
+          "oklch(50% 0.196 268.0)",
+          "oklch(62% 0.196 268.0)",
+          "oklch(75% 0.196 268.0)",
+          "oklch(86% 0.196 268.0)",
+          "oklch(95% 0.196 268.0)"
+        ]
+      },
+      "focus-dark": {
+        "role": "primary",
+        "displayName": "Periwinkle Ring",
+        "canonical": "#91a3f6",
+        "tonalRamp": [
+          "oklch(15% 0.122 273.7)",
+          "oklch(25% 0.122 273.7)",
+          "oklch(38% 0.122 273.7)",
+          "oklch(50% 0.122 273.7)",
+          "oklch(62% 0.122 273.7)",
+          "oklch(75% 0.122 273.7)",
+          "oklch(86% 0.122 273.7)",
+          "oklch(95% 0.122 273.7)"
+        ]
+      },
+      "danger-dark": {
+        "role": "secondary",
+        "displayName": "Coral Brick",
+        "canonical": "#e5826b",
+        "tonalRamp": [
+          "oklch(15% 0.127 34.0)",
+          "oklch(25% 0.127 34.0)",
+          "oklch(38% 0.127 34.0)",
+          "oklch(50% 0.127 34.0)",
+          "oklch(62% 0.127 34.0)",
+          "oklch(75% 0.127 34.0)",
+          "oklch(86% 0.127 34.0)",
+          "oklch(95% 0.127 34.0)"
+        ]
+      },
+      "danger-tint-dark": {
+        "role": "secondary",
+        "displayName": "Ember Tint",
+        "canonical": "#3d2520",
+        "tonalRamp": [
+          "oklch(15% 0.038 32.3)",
+          "oklch(25% 0.038 32.3)",
+          "oklch(38% 0.038 32.3)",
+          "oklch(50% 0.038 32.3)",
+          "oklch(62% 0.038 32.3)",
+          "oklch(75% 0.038 32.3)",
+          "oklch(86% 0.038 32.3)",
+          "oklch(95% 0.038 32.3)"
+        ]
+      },
+      "danger-ink-dark": {
+        "role": "secondary",
+        "displayName": "Pale Coral",
+        "canonical": "#f4bcae",
+        "tonalRamp": [
+          "oklch(15% 0.068 34.4)",
+          "oklch(25% 0.068 34.4)",
+          "oklch(38% 0.068 34.4)",
+          "oklch(50% 0.068 34.4)",
+          "oklch(62% 0.068 34.4)",
+          "oklch(75% 0.068 34.4)",
+          "oklch(86% 0.068 34.4)",
+          "oklch(95% 0.068 34.4)"
+        ]
+      },
+      "disabled-ink-dark": {
+        "role": "neutral",
+        "displayName": "Faded Ink (dark)",
+        "canonical": "#81776b",
+        "tonalRamp": [
+          "oklch(15% 0.022 72.4)",
+          "oklch(25% 0.022 72.4)",
+          "oklch(38% 0.022 72.4)",
+          "oklch(50% 0.022 72.4)",
+          "oklch(62% 0.022 72.4)",
+          "oklch(75% 0.022 72.4)",
+          "oklch(86% 0.022 72.4)",
+          "oklch(95% 0.022 72.4)"
+        ]
+      },
+      "placeholder-dark": {
+        "role": "neutral",
+        "displayName": "Placeholder Stone",
+        "canonical": "#a2978a",
+        "tonalRamp": [
+          "oklch(15% 0.023 72.0)",
+          "oklch(25% 0.023 72.0)",
+          "oklch(38% 0.023 72.0)",
+          "oklch(50% 0.023 72.0)",
+          "oklch(62% 0.023 72.0)",
+          "oklch(75% 0.023 72.0)",
+          "oklch(86% 0.023 72.0)",
+          "oklch(95% 0.023 72.0)"
+        ]
+      },
+      "selection-dark": {
+        "role": "neutral",
+        "displayName": "Selection Indigo",
+        "canonical": "#34407a"
+      },
+      "scrollbar-dark": {
+        "role": "neutral",
+        "displayName": "Scrollbar Umber",
+        "canonical": "#4a4239",
+        "tonalRamp": [
+          "oklch(15% 0.018 70.5)",
+          "oklch(25% 0.018 70.5)",
+          "oklch(38% 0.018 70.5)",
+          "oklch(50% 0.018 70.5)",
+          "oklch(62% 0.018 70.5)",
+          "oklch(75% 0.018 70.5)",
+          "oklch(86% 0.018 70.5)",
+          "oklch(95% 0.018 70.5)"
+        ]
+      },
+      "shadow-tint-dark": {
+        "role": "neutral",
+        "displayName": "Night Shadow",
+        "canonical": "rgb(0 0 0 / 0.3)"
+      },
+      "up-dark": {
+        "role": "tertiary",
+        "displayName": "Gain Green (dark)",
+        "canonical": "#63b98a",
+        "tonalRamp": [
+          "oklch(15% 0.109 158.1)",
+          "oklch(25% 0.109 158.1)",
+          "oklch(38% 0.109 158.1)",
+          "oklch(50% 0.109 158.1)",
+          "oklch(62% 0.109 158.1)",
+          "oklch(75% 0.109 158.1)",
+          "oklch(86% 0.109 158.1)",
+          "oklch(95% 0.109 158.1)"
+        ]
+      },
+      "down-dark": {
+        "role": "tertiary",
+        "displayName": "Loss Red (dark)",
+        "canonical": "#e5826b",
+        "tonalRamp": [
+          "oklch(15% 0.127 34.0)",
+          "oklch(25% 0.127 34.0)",
+          "oklch(38% 0.127 34.0)",
+          "oklch(50% 0.127 34.0)",
+          "oklch(62% 0.127 34.0)",
+          "oklch(75% 0.127 34.0)",
+          "oklch(86% 0.127 34.0)",
+          "oklch(95% 0.127 34.0)"
+        ]
       }
     },
     "typographyMeta": {
@@ -282,8 +572,8 @@
     "shadows": [
       {
         "name": "card-lift",
-        "value": "0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.06)",
-        "purpose": "The single elevation level: every card and the composer bar. Warm-tinted."
+        "value": "0 1px 2px var(--shadow-tint), 0 6px 18px var(--shadow-tint)",
+        "purpose": "The single elevation level: every card and the composer bar. Shadow Tint is warm brown in light, deeper black in dark."
       },
       {
         "name": "hairline-inset",
@@ -298,7 +588,7 @@
       {
         "name": "focus-ring",
         "value": "outline: 3px solid var(--focus); outline-offset: 2px",
-        "purpose": "Global :focus-visible treatment."
+        "purpose": "Global :focus-visible treatment. Action Blue in light, Periwinkle Ring in dark."
       }
     ],
     "motion": [
@@ -324,7 +614,37 @@
         "value": "30rem",
         "purpose": "At or below: Send collapses to an icon-only 2.75rem square with visually hidden label."
       }
-    ]
+    ],
+    "colorScheme": {
+      "mode": "system",
+      "inAppToggle": false,
+      "colorSchemeProperty": "light dark",
+      "darkMedia": "(prefers-color-scheme: dark)",
+      "thirdParty": "Turnstile renders with theme \"auto\".",
+      "pairs": {
+        "ground": "ground-dark",
+        "card": "card-dark",
+        "ink": "ink-dark",
+        "ink-soft": "ink-soft-dark",
+        "line": "line-dark",
+        "muted-fill": "muted-fill-dark",
+        "action": "action-dark",
+        "action-ink": "action-ink-dark",
+        "action-hover": "action-hover-dark",
+        "focus": "focus-dark",
+        "danger": "danger-dark",
+        "danger-tint": "danger-tint-dark",
+        "danger-ink": "danger-ink-dark",
+        "disabled-ink": "disabled-ink-dark",
+        "placeholder": "placeholder-dark",
+        "selection": "selection-dark",
+        "scrollbar": "scrollbar-dark",
+        "shadow-tint": "shadow-tint-dark",
+        "up": "up-dark",
+        "down": "down-dark"
+      },
+      "purpose": "Each light token is overridden by its -dark sibling inside the dark media query; components reference role tokens only."
+    }
   },
   "components": [
     {
@@ -333,7 +653,7 @@
       "refersTo": "button-primary",
       "description": "The single enabled primary action in a context (Continue, Send). Loses the blue when disabled.",
       "html": "<button class=\"ds-btn ds-btn-primary\">Send <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m13 6 6 6-6 6\"/></svg></button> <button class=\"ds-btn ds-btn-primary\" disabled>Continue</button>",
-      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:#9a8f82; box-shadow:none; cursor:not-allowed; } .ds-btn-primary { background:var(--action, #3b5bdb); color:var(--action-ink, #fff); } .ds-btn-primary:hover:not(:disabled) { background:var(--action-hover, #2f4bc0); }"
+      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:var(--disabled-ink, #9a8f82); box-shadow:none; cursor:not-allowed; } .ds-btn-primary { background:var(--action, #3b5bdb); color:var(--action-ink, #fff); } .ds-btn-primary:hover:not(:disabled) { background:var(--action-hover, #2f4bc0); }"
     },
     {
       "name": "Quiet Button",
@@ -341,7 +661,7 @@
       "refersTo": "button-quiet",
       "description": "Secondary and utility actions (Log out, Cancel, mic). Neutral, hairline inset outline.",
       "html": "<button class=\"ds-btn ds-btn-quiet\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/><path d=\"m16 17 5-5-5-5\"/><path d=\"M21 12H9\"/></svg> Log out</button> <button class=\"ds-btn ds-btn-quiet ds-btn-icon\" aria-label=\"Speak your question\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"9\" y=\"2\" width=\"6\" height=\"12\" rx=\"3\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M12 17v4\"/></svg></button>",
-      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:#9a8f82; box-shadow:none; cursor:not-allowed; } .ds-btn-quiet { background:transparent; color:var(--ink, #24211d); box-shadow: inset 0 0 0 1px var(--line, #e7ddd1); } .ds-btn-quiet:hover:not(:disabled) { background:var(--muted-fill, #eee6dc); } .ds-btn-icon { width:2.75rem; padding:0; }"
+      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:var(--disabled-ink, #9a8f82); box-shadow:none; cursor:not-allowed; } .ds-btn-quiet { background:transparent; color:var(--ink, #24211d); box-shadow: inset 0 0 0 1px var(--line, #e7ddd1); } .ds-btn-quiet:hover:not(:disabled) { background:var(--muted-fill, #eee6dc); } .ds-btn-icon { width:2.75rem; padding:0; }"
     },
     {
       "name": "Danger Button",
@@ -349,7 +669,7 @@
       "refersTo": "button-danger",
       "description": "Irreversible actions. Brick outline and label, never a solid fill.",
       "html": "<button class=\"ds-btn ds-btn-danger\">Delete everything</button>",
-      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:#9a8f82; box-shadow:none; cursor:not-allowed; } .ds-btn-danger { background:transparent; color:var(--danger, #b4442f); box-shadow: inset 0 0 0 1px var(--danger, #b4442f); } .ds-btn-danger:hover:not(:disabled) { background:var(--card, #fff); }"
+      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:var(--disabled-ink, #9a8f82); box-shadow:none; cursor:not-allowed; } .ds-btn-danger { background:transparent; color:var(--danger, #b4442f); box-shadow: inset 0 0 0 1px var(--danger, #b4442f); } .ds-btn-danger:hover:not(:disabled) { background:var(--card, #fff); }"
     },
     {
       "name": "Card",
@@ -357,7 +677,7 @@
       "refersTo": "card",
       "description": "White soft card on the warm ground; one idea per card, title and tabular count in the heading row.",
       "html": "<section class=\"ds-card\"><div class=\"ds-card-heading\"><h2>Your watchlist</h2><span class=\"ds-muted\">3 of 10</span></div><p class=\"ds-muted\">Up to 10 US stocks or ETFs.</p></section>",
-      "css": ".ds-card { font-family: 'Figtree Variable', system-ui, sans-serif; background:var(--card, #fff); color:var(--ink, #24211d); border-radius:var(--radius-card, 20px); box-shadow:0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.06); padding:1.5rem; line-height:1.5; } .ds-card > * + * { margin-top:0.75rem; } .ds-card h2 { margin:0; font-size:1.0625rem; font-weight:650; } .ds-card p { margin:0; } .ds-card-heading { display:flex; align-items:baseline; justify-content:space-between; gap:0.75rem; } .ds-card-heading .ds-muted { font-size:0.9375rem; font-variant-numeric:tabular-nums; } .ds-muted { color:var(--ink-soft, #5e574e); }"
+      "css": ".ds-card { font-family: 'Figtree Variable', system-ui, sans-serif; background:var(--card, #fff); color:var(--ink, #24211d); border-radius:var(--radius-card, 20px); box-shadow:var(--shadow-card, 0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.06)); padding:1.5rem; line-height:1.5; } .ds-card > * + * { margin-top:0.75rem; } .ds-card h2 { margin:0; font-size:1.0625rem; font-weight:650; } .ds-card p { margin:0; } .ds-card-heading { display:flex; align-items:baseline; justify-content:space-between; gap:0.75rem; } .ds-card-heading .ds-muted { font-size:0.9375rem; font-variant-numeric:tabular-nums; } .ds-muted { color:var(--ink-soft, #5e574e); }"
     },
     {
       "name": "Symbol Pills",
@@ -373,7 +693,7 @@
       "refersTo": "alert",
       "description": "Inline error placed directly below the action it reports on.",
       "html": "<p class=\"ds-alert\" role=\"alert\">Couldn't log out. Please try again.</p>",
-      "css": ".ds-alert { font-family: 'Figtree Variable', system-ui, sans-serif; margin:0; padding:0.75rem 1rem; border-radius:var(--radius-control, 14px); background:#f8e7e3; color:#7d2c1c; line-height:1.5; }"
+      "css": ".ds-alert { font-family: 'Figtree Variable', system-ui, sans-serif; margin:0; padding:0.75rem 1rem; border-radius:var(--radius-control, 14px); background:var(--danger-tint, #f8e7e3); color:var(--danger-ink, #7d2c1c); line-height:1.5; }"
     },
     {
       "name": "Inline Confirmation",
@@ -381,7 +701,7 @@
       "refersTo": "inline-confirmation",
       "description": "Destructive confirmation that replaces its trigger in place; Cancel on white, then the danger button.",
       "html": "<div class=\"ds-confirm\" role=\"alertdialog\"><p>Logging out permanently deletes your watchlist and chat history.</p><button class=\"ds-btn ds-btn-quiet\">Cancel</button><button class=\"ds-btn ds-btn-danger\">Delete everything</button></div>",
-      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:#9a8f82; box-shadow:none; cursor:not-allowed; } .ds-btn-quiet { background:var(--card, #fff); color:var(--ink, #24211d); box-shadow: inset 0 0 0 1px var(--line, #e7ddd1); } .ds-btn-danger { background:transparent; color:var(--danger, #b4442f); box-shadow: inset 0 0 0 1px var(--danger, #b4442f); } .ds-confirm { font-family: 'Figtree Variable', system-ui, sans-serif; display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; padding:0.75rem 0.75rem 0.75rem 1rem; border-radius:var(--radius-card, 20px); background:#f8e7e3; } .ds-confirm p { margin:0; flex:1 1 16rem; color:#7d2c1c; font-weight:600; line-height:1.5; }"
+      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:var(--disabled-ink, #9a8f82); box-shadow:none; cursor:not-allowed; } .ds-btn-quiet { background:var(--card, #fff); color:var(--ink, #24211d); box-shadow: inset 0 0 0 1px var(--line, #e7ddd1); } .ds-btn-danger { background:transparent; color:var(--danger, #b4442f); box-shadow: inset 0 0 0 1px var(--danger, #b4442f); } .ds-confirm { font-family: 'Figtree Variable', system-ui, sans-serif; display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; padding:0.75rem 0.75rem 0.75rem 1rem; border-radius:var(--radius-card, 20px); background:var(--danger-tint, #f8e7e3); } .ds-confirm p { margin:0; flex:1 1 16rem; color:var(--danger-ink, #7d2c1c); font-weight:600; line-height:1.5; }"
     },
     {
       "name": "Composer",
@@ -389,14 +709,15 @@
       "refersTo": "composer-bar",
       "description": "Pinned input bar: borderless field, quiet mic, primary Send, fine print below.",
       "html": "<div class=\"ds-composer\"><form class=\"ds-composer-bar\"><input type=\"text\" aria-label=\"Message\" placeholder=\"Ask about your stocks…\"><button type=\"button\" class=\"ds-btn ds-btn-quiet ds-btn-icon\" aria-label=\"Speak your question\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"9\" y=\"2\" width=\"6\" height=\"12\" rx=\"3\"/><path d=\"M5 10a7 7 0 0 0 14 0\"/><path d=\"M12 17v4\"/></svg></button><button class=\"ds-btn ds-btn-primary\" type=\"submit\">Send <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m13 6 6 6-6 6\"/></svg></button></form><p class=\"ds-fine\">Not financial advice.</p></div>",
-      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:#9a8f82; box-shadow:none; cursor:not-allowed; } .ds-btn-primary { background:var(--action, #3b5bdb); color:#fff; } .ds-btn-primary:hover:not(:disabled) { background:var(--action-hover, #2f4bc0); } .ds-btn-quiet { background:transparent; color:var(--ink, #24211d); box-shadow: inset 0 0 0 1px var(--line, #e7ddd1); } .ds-btn-quiet:hover:not(:disabled) { background:var(--muted-fill, #eee6dc); } .ds-btn-icon { width:2.75rem; padding:0; } .ds-composer { padding:0.75rem 1rem 1rem; background:var(--ground, #f5efe8); } .ds-composer-bar { display:flex; align-items:center; gap:0.5rem; max-width:46rem; margin:0 auto; padding:0.5rem; border-radius:22px; background:var(--card, #fff); box-shadow:0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.06); } .ds-composer-bar input { flex:1; min-width:0; min-height:2.75rem; padding:0 0.75rem; border:0; border-radius:14px; font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; color:var(--ink, #24211d); background:transparent; } .ds-composer-bar input::placeholder { color:#766b5e; } .ds-composer-bar input:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-fine { font-family: 'Figtree Variable', system-ui, sans-serif; margin:0.5rem auto 0; text-align:center; font-size:0.8125rem; color:var(--ink-soft, #5e574e); }"
+      "css": ".ds-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; min-height:2.75rem; padding:0 1.5rem; border:0; border-radius:var(--radius-control, 14px); font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; font-weight:650; cursor:pointer; transition: transform 160ms cubic-bezier(0.16,1,0.3,1), background-color 160ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:active:not(:disabled) { transform: scale(0.97); } .ds-btn:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-btn svg { width:1.25rem; height:1.25rem; flex:none; } .ds-btn:disabled { background:var(--muted-fill, #eee6dc); color:var(--disabled-ink, #9a8f82); box-shadow:none; cursor:not-allowed; } .ds-btn-primary { background:var(--action, #3b5bdb); color:var(--action-ink, #fff); } .ds-btn-primary:hover:not(:disabled) { background:var(--action-hover, #2f4bc0); } .ds-btn-quiet { background:transparent; color:var(--ink, #24211d); box-shadow: inset 0 0 0 1px var(--line, #e7ddd1); } .ds-btn-quiet:hover:not(:disabled) { background:var(--muted-fill, #eee6dc); } .ds-btn-icon { width:2.75rem; padding:0; } .ds-composer { padding:0.75rem 1rem 1rem; background:var(--ground, #f5efe8); } .ds-composer-bar { display:flex; align-items:center; gap:0.5rem; max-width:46rem; margin:0 auto; padding:0.5rem; border-radius:22px; background:var(--card, #fff); box-shadow:var(--shadow-card, 0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.06)); } .ds-composer-bar input { flex:1; min-width:0; min-height:2.75rem; padding:0 0.75rem; border:0; border-radius:14px; font-family: 'Figtree Variable', system-ui, sans-serif; font-size:1rem; color:var(--ink, #24211d); background:transparent; } .ds-composer-bar input::placeholder { color:var(--placeholder, #766b5e); } .ds-composer-bar input:focus-visible { outline:3px solid var(--focus, #3b5bdb); outline-offset:2px; } .ds-fine { font-family: 'Figtree Variable', system-ui, sans-serif; margin:0.5rem auto 0; text-align:center; font-size:0.8125rem; color:var(--ink-soft, #5e574e); }"
     }
   ],
   "narrative": {
     "northStar": "The Warm Consumer App",
-    "overview": "A friendly place to keep an eye on a few stocks. The page sits on a warm, paper-tinted ground; everything the visitor reads or uses lives on white, softly lifted, generously rounded cards, one idea per card. Type is a single rounded humanist sans (Figtree) in plain sentence case, with tabular figures wherever a number or symbol appears. Ink is a warm near-black, never pure black.\n\nColour is spent sparingly and with meaning. A single saturated blue marks the thing you can do right now and nothing else; when that thing is not yet possible, the blue disappears entirely. Destructive consequences get a muted brick red, always as text, outline or a pale tint, never as a solid fill. Everything else is warm neutrals.\n\nDensity is relaxed: one centred column about 46rem wide, a 44px touch floor on every control, and a pinned composer at the bottom so the visitor always knows where to type or speak next. It deliberately refuses the dense finance dashboard and the generic chat-bubble panel.",
+    "overview": "A friendly place to keep an eye on a few stocks. The page sits on a warm, paper-tinted ground; everything the visitor reads or uses lives on white, softly lifted, generously rounded cards, one idea per card. Type is a single rounded humanist sans (Figtree) in plain sentence case, with tabular figures wherever a number or symbol appears. Ink is a warm near-black, never pure black.\n\nColour is spent sparingly and with meaning. A single saturated blue marks the thing you can do right now and nothing else; when that thing is not yet possible, the blue disappears entirely. Destructive consequences get a muted brick red, always as text, outline or a pale tint, never as a solid fill. Everything else is warm neutrals.\n\nThe world comes in two schemes and follows the visitor's system setting. After sunset the paper turns to a warm near-black, the cards to a lifted warm charcoal and the ink to a warm cream; the blue and the brick stay recognisably themselves, lightened just enough to hold contrast. Same layout, same shapes, same rules.\n\nDensity is relaxed: one centred column about 46rem wide, a 44px touch floor on every control, and a pinned composer at the bottom so the visitor always knows where to type or speak next. It deliberately refuses the dense finance dashboard and the generic chat-bubble panel.",
     "keyCharacteristics": [
-      "Warm tinted ground, white soft cards with a faint warm shadow and no borders.",
+      "Warm tinted ground, white soft cards with a faint warm shadow and no borders; in the dark scheme, warm charcoal cards on a near-black ground.",
+      "Paired light and dark palettes that follow the system colour scheme; no in-app toggle.",
       "One action colour (blue), used only on enabled primary actions.",
       "Disabled controls go neutral: muted fill, muted ink, no accent.",
       "One typeface (Figtree Variable, self-hosted), weights 400 / 600 / 650 / 700.",
@@ -407,6 +728,11 @@
       {
         "name": "The Action-Only Accent Rule",
         "body": "Blue appears only on things that can be pressed right now and that are the primary action of their context. Quiet controls (Log out, Cancel, the mic) stay neutral. A disabled control loses the blue entirely, so what is possible reads at a glance.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paired Token Rule",
+        "body": "Every colour is a `:root` token with a light value and a dark value, and component rules reference tokens only. A new colour is added to both palettes at once; a surface that hard-codes a colour breaks in one of the two schemes.",
         "section": "colors"
       },
       {
@@ -436,6 +762,7 @@
       "**Do** use tabular figures for every count, symbol and number.",
       "**Do** keep controls at least 2.75rem tall and keep radii concentric (14px inside 20px).",
       "**Do** express errors and destructive steps as Blush Tint with Deep Brick text, or a Brick Red outline.",
+      "**Do** add any new colour as a token in both the light and dark palettes, and verify its contrast in both schemes.",
       "**Do** pair up/down colour with an explicit + or − sign, never colour alone (provisional until data surfaces ship)."
     ],
     "donts": [
@@ -443,7 +770,8 @@
       "**Don't** fill a button solid red.",
       "**Don't** add borders to cards or a second shadow level; nested surfaces are flat tints.",
       "**Don't** introduce a second typeface, uppercase labels or small-caps kickers above headings.",
-      "**Don't** use pure black text or neutral grey shadows; ink and shadow are warm."
+      "**Don't** use pure black text, or pure white text in the dark scheme; ink is warm in both. Light-scheme shadows stay warm brown, never neutral grey.",
+      "**Don't** write a colour literal in a component rule; reference the token so both schemes stay correct."
     ]
   }
 }

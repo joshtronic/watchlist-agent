@@ -15,6 +15,13 @@
 	--down: #b4442f;
 	--danger: #b4442f;
 	--muted-fill: #eee6dc;
+	--danger-tint: #f8e7e3;
+	--danger-ink: #7d2c1c;
+	--disabled-ink: #9a8f82;
+	--placeholder: #766b5e;
+	--selection: #d6ddfa;
+	--scrollbar: #cdbfae;
+	--shadow-tint: rgb(60 40 20 / 0.06);
 
 	--radius-card: 20px;
 	--radius-control: 14px;
@@ -29,11 +36,10 @@
 	--space-7: 3rem;
 
 	--column: 46rem;
-	--shadow-card:
-		0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.06);
+	--shadow-card: 0 1px 2px var(--shadow-tint), 0 6px 18px var(--shadow-tint);
 	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-	color-scheme: light;
+	color-scheme: light dark;
 	font-family: "Figtree Variable", system-ui, sans-serif;
 	font-size: 100%;
 	line-height: 1.5;
@@ -41,7 +47,33 @@
 	background: var(--ground);
 	caret-color: var(--action);
 	accent-color: var(--action);
-	scrollbar-color: #cdbfae var(--ground);
+	scrollbar-color: var(--scrollbar) var(--ground);
+}
+
+/* Dark: the same warm world after sunset. Follows the system setting. */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--ground: #1c1916;
+		--card: #27231f;
+		--ink: #f2ece4;
+		--ink-soft: #b9aea0;
+		--line: #3d362e;
+		--action: #4263eb;
+		--action-ink: #ffffff;
+		--action-hover: #3553d0;
+		--focus: #91a3f6;
+		--up: #63b98a;
+		--down: #e5826b;
+		--danger: #e5826b;
+		--muted-fill: #36302a;
+		--danger-tint: #3d2520;
+		--danger-ink: #f4bcae;
+		--disabled-ink: #81776b;
+		--placeholder: #a2978a;
+		--selection: #34407a;
+		--scrollbar: #4a4239;
+		--shadow-tint: rgb(0 0 0 / 0.3);
+	}
 }
 
 *,
@@ -56,7 +88,7 @@ body {
 }
 
 ::selection {
-	background: #d6ddfa;
+	background: var(--selection);
 	color: var(--ink);
 }
 
@@ -163,7 +195,7 @@ h2 {
 
 .button:disabled {
 	background: var(--muted-fill);
-	color: #9a8f82;
+	color: var(--disabled-ink);
 	box-shadow: none;
 	cursor: not-allowed;
 }
@@ -246,8 +278,8 @@ h2 {
 	margin-top: var(--space-4);
 	padding: var(--space-3) var(--space-4);
 	border-radius: var(--radius-control);
-	background: #f8e7e3;
-	color: #7d2c1c;
+	background: var(--danger-tint);
+	color: var(--danger-ink);
 }
 
 /* Signed-in shell: header, one centred column, input bar pinned below. */
@@ -359,7 +391,7 @@ h2 {
 }
 
 .composer-bar input::placeholder {
-	color: #766b5e;
+	color: var(--placeholder);
 }
 
 .composer-bar input:disabled {
@@ -393,12 +425,12 @@ h2 {
 	width: 100%;
 	padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
 	border-radius: var(--radius-card);
-	background: #f8e7e3;
+	background: var(--danger-tint);
 }
 
 .logout-confirmation p {
 	flex: 1 1 16rem;
-	color: #7d2c1c;
+	color: var(--danger-ink);
 	font-weight: 600;
 }
 

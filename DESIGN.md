@@ -18,8 +18,30 @@ colors:
   disabled-ink: "#9a8f82"
   placeholder: "#766b5e"
   selection: "#d6ddfa"
+  scrollbar: "#cdbfae"
+  shadow-tint: "rgb(60 40 20 / 0.06)"
   up: "#2f7a4d"
   down: "#b4442f"
+  ground-dark: "#1c1916"
+  card-dark: "#27231f"
+  ink-dark: "#f2ece4"
+  ink-soft-dark: "#b9aea0"
+  line-dark: "#3d362e"
+  muted-fill-dark: "#36302a"
+  action-dark: "#4263eb"
+  action-ink-dark: "#ffffff"
+  action-hover-dark: "#3553d0"
+  focus-dark: "#91a3f6"
+  danger-dark: "#e5826b"
+  danger-tint-dark: "#3d2520"
+  danger-ink-dark: "#f4bcae"
+  disabled-ink-dark: "#81776b"
+  placeholder-dark: "#a2978a"
+  selection-dark: "#34407a"
+  scrollbar-dark: "#4a4239"
+  shadow-tint-dark: "rgb(0 0 0 / 0.3)"
+  up-dark: "#63b98a"
+  down-dark: "#e5826b"
 typography:
   display:
     fontFamily: "Figtree Variable, system-ui, sans-serif"
@@ -120,7 +142,7 @@ components:
     padding: "0 1.5rem"
     height: "2.75rem"
   button-danger-hover:
-    backgroundColor: "{colors.danger-tint}"
+    backgroundColor: "{colors.card}"
     textColor: "{colors.danger}"
   button-disabled:
     backgroundColor: "{colors.muted-fill}"
@@ -175,10 +197,13 @@ A friendly place to keep an eye on a few stocks. The page sits on a warm, paper-
 
 Colour is spent sparingly and with meaning. A single saturated blue marks the thing you can do right now and nothing else; when that thing is not yet possible, the blue disappears entirely. Destructive consequences get a muted brick red, always as text, outline or a pale tint, never as a solid fill. Everything else is warm neutrals.
 
+The world comes in two schemes and follows the visitor's system setting. After sunset the paper turns to a warm near-black, the cards to a lifted warm charcoal and the ink to a warm cream; the blue and the brick stay recognisably themselves, lightened just enough to hold contrast. Same layout, same shapes, same rules.
+
 Density is relaxed: one centred column about 46rem wide, a 44px touch floor on every control, and a pinned composer at the bottom so the visitor always knows where to type or speak next. It deliberately refuses the dense finance dashboard and the generic chat-bubble panel.
 
 **Key Characteristics:**
-- Warm tinted ground, white soft cards with a faint warm shadow and no borders.
+- Warm tinted ground, white soft cards with a faint warm shadow and no borders; in the dark scheme, warm charcoal cards on a near-black ground.
+- Paired light and dark palettes that follow the system colour scheme; no in-app toggle.
 - One action colour (blue), used only on enabled primary actions.
 - Disabled controls go neutral: muted fill, muted ink, no accent.
 - One typeface (Figtree Variable, self-hosted), weights 400 / 600 / 650 / 700.
@@ -187,35 +212,41 @@ Density is relaxed: one centred column about 46rem wide, a 44px touch floor on e
 
 ## Colors
 
-A warm neutral world with one blue voice for action and a muted brick red for consequence.
+A warm neutral world with one blue voice for action and a muted brick red for consequence, in a paired light and dark scheme. The role descriptions below hold in both schemes; each token's dark value is its `-dark` sibling in the frontmatter.
 
 ### Primary
-- **Action Blue** (`action`): fill of the enabled primary button (Continue, Send). Also the focus ring (`focus`), caret colour and native `accent-color` (the checkbox tick). White label on it (`action-ink`) at 5.7:1.
-- **Pressed Blue** (`action-hover`): hover fill of the primary button only.
+- **Action Blue** (`action`): fill of the enabled primary button (Continue, Send), caret colour and native `accent-color` (the checkbox tick). White label on it (`action-ink`) at 5.7:1 (5.0:1 dark).
+- **Pressed Blue** (`action-hover`): hover fill of the primary button only; deeper than Action Blue in both schemes (white label 6.4:1 dark).
+- **Focus Ring** (`focus`): the global focus outline. Identical to Action Blue in the light scheme; in the dark scheme a lighter Periwinkle Ring (`focus-dark`) so the outline reads on charcoal.
 
 ### Secondary
-- **Brick Red** (`danger`): label and 1px inset outline of the destructive button. Never a solid fill.
-- **Blush Tint** (`danger-tint`): background of the error alert, the inline logout confirmation, and the destructive button's hover.
-- **Deep Brick** (`danger-ink`): text on Blush Tint (7.8:1).
+- **Brick Red** (`danger`): label and 1px inset outline of the destructive button. Never a solid fill. Dark: Coral Brick (5.2:1 on its tint).
+- **Blush Tint** (`danger-tint`): background of the error alert and the inline logout confirmation. Dark: Ember Tint, a deep warm red-brown.
+- **Deep Brick** (`danger-ink`): text on Blush Tint (7.8:1). Dark: Pale Coral (8.5:1 on Ember Tint).
 
 ### Tertiary (data, declared but not yet rendered)
-- **Muted Gain Green** (`up`) and **Muted Loss Red** (`down`): declared in `:root` for price movement. No shipped surface uses them yet; `down` shares its value with `danger`. Provisional until the snapshot tables land.
+- **Muted Gain Green** (`up`) and **Muted Loss Red** (`down`): declared in `:root` for price movement. No shipped surface uses them yet; `down` shares its value with `danger` in both schemes, and both lighten in the dark scheme. Provisional until the snapshot tables land.
 
 ### Neutral
-- **Warm Paper** (`ground`): page background, composer band, and the inset disclaimer panel inside the gate card.
-- **Card White** (`card`): every card and the composer bar.
-- **Warm Ink** (`ink`): all primary text (16:1 on card, 14:1 on ground).
-- **Soft Ink** (`ink-soft`): secondary text, counts, fine print (7.1:1 on card).
+- **Warm Paper** (`ground`): page background, composer band, and the inset disclaimer panel inside the gate card. Dark: Night Paper, a warm near-black.
+- **Card White** (`card`): every card and the composer bar. Dark: Lifted Charcoal, one tonal step above Night Paper.
+- **Warm Ink** (`ink`): all primary text (16:1 on card, 14:1 on ground). Dark: Cream Ink (13.3:1 on card), never pure white.
+- **Soft Ink** (`ink-soft`): secondary text, counts, fine print (7.1:1 on card; 7.2:1 dark).
 - **Hairline Sand** (`line`): the 1px inset outline of the quiet button. Not used as a card border.
 - **Oat Fill** (`muted-fill`): symbol pills, quiet-button hover, and the disabled-button fill.
 - **Faded Ink** (`disabled-ink`): label of disabled buttons only.
-- **Placeholder Taupe** (`placeholder`): composer placeholder text (5.2:1 on card).
-- **Selection Wash** (`selection`): text selection background, with ink text.
+- **Placeholder Taupe** (`placeholder`): composer placeholder text (5.2:1 on card; 5.4:1 dark).
+- **Selection Wash** (`selection`): text selection background, with ink text. Dark: a deep indigo wash.
+- **Scrollbar Sand** (`scrollbar`): the page scrollbar thumb, on a `ground` track.
+- **Shadow Tint** (`shadow-tint`): the colour of both Card lift layers. Warm brown at low alpha in the light scheme; black at higher alpha in the dark scheme, where a tinted shadow would not read against the dark ground.
 
-Note: `danger-tint`, `danger-ink`, `disabled-ink`, `placeholder` and `selection` are hex literals in the stylesheet rather than `:root` custom properties; the values here are the shipped ones.
+### Colour scheme
+The root declares `color-scheme: light dark`, and a `prefers-color-scheme: dark` media query swaps every palette token to its `-dark` value. The scheme follows the operating-system setting; there is no in-app toggle and no stored preference. Native controls (checkbox, scrollbar, form chrome) follow through `color-scheme`, and the Turnstile widget on the gate renders with its automatic theme so it matches. Every colour in the stylesheet is a `:root` token; no rule carries a colour literal.
 
 ### Named Rules
 **The Action-Only Accent Rule.** Blue appears only on things that can be pressed right now and that are the primary action of their context. Quiet controls (Log out, Cancel, the mic) stay neutral. A disabled control loses the blue entirely, so what is possible reads at a glance.
+
+**The Paired Token Rule.** Every colour is a `:root` token with a light value and a dark value, and component rules reference tokens only. A new colour is added to both palettes at once; a surface that hard-codes a colour breaks in one of the two schemes.
 
 **The No Solid Red Rule.** Destructive and error states are tints and outlines: Blush Tint backgrounds with Deep Brick text, or a Brick Red outline and label. Nothing destructive is filled solid.
 
@@ -255,10 +286,10 @@ Responsive: one breakpoint at 30rem. Below it, Send collapses to a 44px icon-onl
 
 ## Elevation & Depth
 
-Hybrid: tonal layering does most of the work (white cards on warm ground), with one soft, warm-tinted ambient shadow to lift cards off the paper. No borders on cards.
+Hybrid: tonal layering does most of the work (white cards on warm ground; in the dark scheme, charcoal cards one step lighter than the near-black ground), with one soft ambient shadow to lift cards off the paper. No borders on cards.
 
 ### Shadow Vocabulary
-- **Card lift** (`box-shadow: 0 1px 2px rgb(60 40 20 / 0.06), 0 6px 18px rgb(60 40 20 / 0.06)`): every card and the composer bar. The shadow is tinted warm brown, never neutral grey or black.
+- **Card lift** (`box-shadow: 0 1px 2px var(--shadow-tint), 0 6px 18px var(--shadow-tint)`): every card and the composer bar. In the light scheme the Shadow Tint is warm brown, never neutral grey or black; in the dark scheme it is a deeper black so the lift still registers, while the tonal step carries most of the separation.
 - **Hairline inset** (`box-shadow: inset 0 0 0 1px var(--line)`): the quiet button's outline. The danger button uses the same 1px inset in `var(--danger)`. Inset shadows rather than borders keep control sizes identical across variants.
 
 ### Named Rules
@@ -274,11 +305,11 @@ Generous, concentric rounding. Controls are 14px; cards are 20px; the composer b
 Soft, confident, and calm: rounded rectangles with a 44px touch floor and a gentle press.
 - **Shape:** gently rounded (14px), min height 2.75rem, horizontal padding 1.5rem, 0.5rem gap between icon and label. Icon-only buttons are 2.75rem square.
 - **Primary:** Action Blue fill, white label. Exactly one per context (Continue on the gate, Send in the composer). Hover deepens to Pressed Blue. On the gate it spans the card width.
-- **Quiet:** transparent with a 1px Hairline Sand inset outline and ink label; hover fills with Oat. Used for Log out, Cancel and the mic. Inside the Blush confirmation it sits on Card White so it reads as a button.
-- **Danger:** transparent with a 1px Brick Red inset outline and Brick Red label; hover fills with Card White, which reads against the Blush confirmation row it sits on.
+- **Quiet:** transparent with a 1px Hairline Sand inset outline and ink label; hover fills with Oat. Used for Log out, Cancel and the mic. Inside the Blush confirmation it sits on the card colour so it reads as a button.
+- **Danger:** transparent with a 1px Brick Red inset outline and Brick Red label; hover fills with the card colour, which reads against the Blush confirmation row it sits on.
 - **Disabled (all variants):** Oat fill, Faded Ink label, outline removed, `not-allowed` cursor. Hover and press effects are suppressed.
 - **Press:** `scale(0.97)` over 160ms with `cubic-bezier(0.16, 1, 0.3, 1)`; background colour transitions on the same curve. Both are removed under `prefers-reduced-motion`.
-- **Focus:** global 3px solid Action Blue outline, 2px offset.
+- **Focus:** global 3px solid Focus Ring outline, 2px offset (Action Blue in light, Periwinkle Ring in dark).
 
 ### Chips (symbol pills)
 - **Style:** Oat fill, ink text, full pill radius, padding 0.25rem 0.75rem, Symbol typography. No border.
@@ -286,7 +317,7 @@ Soft, confident, and calm: rounded rectangles with a 44px touch floor and a gent
 
 ### Cards / Containers
 - **Corner Style:** 20px.
-- **Background:** Card White on Warm Paper.
+- **Background:** Card White on Warm Paper (Lifted Charcoal on Night Paper in dark).
 - **Shadow Strategy:** Card lift (see Elevation).
 - **Border:** none.
 - **Internal Padding:** 1.5rem (2rem on the gate card); 0.75rem between stacked children.
@@ -300,7 +331,7 @@ Soft, confident, and calm: rounded rectangles with a 44px touch floor and a gent
 
 ### Alerts
 - **Error alert:** Blush Tint background, Deep Brick text, 14px radius, padding 0.75rem 1rem, `role="alert"`. Placed directly below the action it reports on.
-- **Inline confirmation:** destructive confirmation replaces the triggering button in place instead of opening a modal. A full-width Blush Tint row (20px radius) with the consequence in Deep Brick at weight 600, then Cancel (quiet, on white) and the danger button. Focus moves to Cancel on open and back to the trigger on cancel.
+- **Inline confirmation:** destructive confirmation replaces the triggering button in place instead of opening a modal. A full-width Blush Tint row (20px radius) with the consequence in Deep Brick at weight 600, then Cancel (quiet, on the card colour) and the danger button. Focus moves to Cancel on open and back to the trigger on cancel.
 
 ### Navigation
 - **Header:** app name (Headline) on the left, Log out (quiet button with icon) on the right, wrapping when space runs out. No other navigation exists.
@@ -313,6 +344,7 @@ Soft, confident, and calm: rounded rectangles with a 44px touch floor and a gent
 - **Do** use tabular figures for every count, symbol and number.
 - **Do** keep controls at least 2.75rem tall and keep radii concentric (14px inside 20px).
 - **Do** express errors and destructive steps as Blush Tint with Deep Brick text, or a Brick Red outline.
+- **Do** add any new colour as a token in both the light and dark palettes, and verify its contrast in both schemes.
 - **Do** pair up/down colour with an explicit + or − sign, never colour alone (provisional until data surfaces ship).
 
 ### Don't:
@@ -320,4 +352,5 @@ Soft, confident, and calm: rounded rectangles with a 44px touch floor and a gent
 - **Don't** fill a button solid red.
 - **Don't** add borders to cards or a second shadow level; nested surfaces are flat tints.
 - **Don't** introduce a second typeface, uppercase labels or small-caps kickers above headings.
-- **Don't** use pure black text or neutral grey shadows; ink and shadow are warm.
+- **Don't** use pure black text, or pure white text in the dark scheme; ink is warm in both. Light-scheme shadows stay warm brown, never neutral grey.
+- **Don't** write a colour literal in a component rule; reference the token so both schemes stay correct.
