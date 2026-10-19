@@ -48,7 +48,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 - [x] `.dev.vars.example`, and `.dev.vars` ignored.
 - [x] **Replace the Go-template `.gitignore`** with Node/Wrangler entries: `node_modules/`,
       `.wrangler/`, `dist/`, keeping the `.dev.vars` rules.
-- [ ] **Test first:** `GET /api/health` → `{ ok: true, commit: "<sha>" }`.
+- [x] **Test first:** `GET /api/health` → `{ ok: true, commit: "<sha>" }`.
   - The commit comes from a `GIT_COMMIT` var injected at deploy time
     (`wrangler deploy --var GIT_COMMIT:<sha>`).
   - Locally, `npm run deploy` injects `git rev-parse HEAD`; in CI it's `github.sha`.
