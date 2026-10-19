@@ -70,7 +70,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
   - Uses the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets.
 - [x] **Post-deploy smoke check:** a deploy step polls `/api/health` until `commit` matches
       `github.sha`, and fails the job if it never does.
-- [ ] **Verify end to end:** push to `main` and watch CI, the deploy and the smoke check go
+- [x] **Verify end to end:** push to `main` and watch CI, the deploy and the smoke check go
       green.
 - [ ] **Switch to branches + PRs from here on.** Optionally (Josh), protect `main` with required
       CI checks.
