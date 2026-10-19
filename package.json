@@ -1,23 +1,25 @@
 {
-  "name": "watchlist-agent",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "license": "MIT",
-  "engines": {
-    "node": ">=26"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.5.15",
-    "@cloudflare/vite-plugin": "^1.64.0",
-    "@cloudflare/vitest-plugin": "^1.4.5",
-    "typescript": "^7.0.2",
-    "vite": "^8.3.4",
-    "vitest": "^5.0.5",
-    "wrangler": "^4.151.2"
-  },
-  "scripts": {
-    "types": "wrangler types --strict-vars=false --env-file=.dev.vars.example",
-    "typecheck": "tsc -b"
-  }
+	"name": "watchlist-agent",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"license": "MIT",
+	"engines": {
+		"node": ">=26"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.15",
+		"@cloudflare/vite-plugin": "^1.64.0",
+		"@cloudflare/vitest-plugin": "^1.4.5",
+		"typescript": "^7.0.2",
+		"vite": "^8.3.4",
+		"vitest": "^5.0.5",
+		"wrangler": "^4.151.2"
+	},
+	"scripts": {
+		"types": "wrangler types --strict-vars=false --env-file=.dev.vars.example",
+		"typecheck": "tsc -b",
+		"lint": "biome check .",
+		"format": "biome check --write ."
+	}
 }

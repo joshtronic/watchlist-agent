@@ -1,16 +1,16 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "watchlist-agent",
-  "main": "src/worker/index.ts",
-  // Matches the oldest workerd in the tree (pinned by @cloudflare/vite-plugin).
-  "compatibility_date": "2026-10-12",
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "watchlist-agent",
+	"main": "src/worker/index.ts",
+	// Oldest workerd in the tree (pinned by @cloudflare/vite-plugin).
+	"compatibility_date": "2026-10-12",
 
-  // Only reachable on the custom domain.
-  "workers_dev": false,
-  "preview_urls": false,
-  "routes": [{ "pattern": "watchlist.fetchlogic.com", "custom_domain": true }],
+	// Only reachable on the custom domain.
+	"workers_dev": false,
+	"preview_urls": false,
+	"routes": [{ "pattern": "watchlist.fetchlogic.com", "custom_domain": true }],
 
-  "vars": {
-    "TURNSTILE_SITE_KEY": "0x4AAAAAAFb-6m0dtfu1GnRs"
-  }
+	"vars": {
+		"TURNSTILE_SITE_KEY": "0x4AAAAAAFb-6m0dtfu1GnRs"
+	}
 }
