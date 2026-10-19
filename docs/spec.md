@@ -365,7 +365,7 @@ never pasted into chat.
   - `wrangler` as a dev dependency
 - **TDD:** tests are written before implementation for every unit.
 - **`npm test` (default, deterministic, offline):**
-  - Uses `@cloudflare/vitest-pool-workers`, which runs in workerd with real DO storage.
+  - Uses `@cloudflare/vitest-plugin`, which runs in workerd with real DO storage.
   - The Workers AI binding is faked with scripted model responses: good tool calls, malformed
     args, unknown tools, runaway loops, quota errors.
   - Alpaca and Turnstile are mocked at the fetch layer. Turnstile also has official test keys

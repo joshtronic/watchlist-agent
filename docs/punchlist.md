@@ -36,7 +36,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
   - strict TypeScript;
   - Biome;
   - Vite + `@cloudflare/vite-plugin`;
-  - dev dependencies: `wrangler`, `vitest`, `@cloudflare/vitest-pool-workers`.
+  - dev dependencies: `wrangler`, `vitest`, `@cloudflare/vitest-plugin`.
 - [ ] **Confirm the toolchain runs on Node 26:** clean install, test runner, build, and
       `wrangler dev`.
 - [ ] **npm scripts:** `dev`, `build`, `test`, `test:live` (empty suite for now), `lint`,
