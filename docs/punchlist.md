@@ -46,7 +46,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
   - custom domain route `watchlist.fetchlogic.com`, `workers_dev: false`;
   - `TURNSTILE_SITE_KEY` var.
 - [x] `.dev.vars.example`, and `.dev.vars` ignored.
-- [ ] **Replace the Go-template `.gitignore`** with Node/Wrangler entries: `node_modules/`,
+- [x] **Replace the Go-template `.gitignore`** with Node/Wrangler entries: `node_modules/`,
       `.wrangler/`, `dist/`, keeping the `.dev.vars` rules.
 - [ ] **Test first:** `GET /api/health` → `{ ok: true, commit: "<sha>" }`.
   - The commit comes from a `GIT_COMMIT` var injected at deploy time
