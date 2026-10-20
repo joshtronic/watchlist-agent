@@ -82,6 +82,7 @@ export function mountChatPanel({
 					add({
 						kind: "snapshots",
 						asOf: chatEvent.asOf,
+						market: chatEvent.market,
 						rows: chatEvent.rows,
 						at: Date.now(),
 					});

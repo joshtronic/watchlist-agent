@@ -232,14 +232,28 @@ async function getSnapshots(
 		};
 	}
 
-	const rows = (await deps.getSnapshots(lookup)).map((row) => ({
+	const [snapshots, market] = await Promise.all([
+		deps.getSnapshots(lookup),
+		readClock(deps),
+	]);
+	const rows = snapshots.map((row) => ({
 		...row,
 		onWatchlist: watchlist.includes(row.symbol),
 	}));
 	return {
-		result: { asOf, rows, unavailable },
-		events: [{ type: "snapshots", asOf, rows }],
+		result: { asOf, market, rows, unavailable },
+		events: [{ type: "snapshots", asOf, market, rows }],
 	};
+}
+
+// The clock only labels the data, so losing it shouldn't lose the snapshots.
+async function readClock(deps: ToolDeps): Promise<MarketClock | null> {
+	try {
+		return await deps.getClock();
+	} catch (error) {
+		if (error instanceof MarketDataError) return null;
+		throw error;
+	}
 }
 
 /**

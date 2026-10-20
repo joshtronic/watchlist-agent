@@ -1,4 +1,4 @@
-import { normalizeSymbol } from "../watchlist";
+import { normalizeSymbol, WATCHLIST_CAP } from "../watchlist";
 import {
 	type AiClient,
 	AiError,
@@ -29,17 +29,33 @@ export type TurnResult =
 	| { ok: true; prose: string; symbols: string[]; offer: string[] }
 	| { ok: false; error: "loop_limit" | "ai_error" | "ai_quota_exhausted" };
 
-export function buildSystemPrompt(pendingOffer: string[]): string {
+export interface PromptContext {
+	watchlist: string[];
+	pendingOffer: string[];
+}
+
+export function buildSystemPrompt({
+	watchlist,
+	pendingOffer,
+}: PromptContext): string {
 	const lines = [
 		"You are Watchlist Agent, a friendly assistant that helps people keep an eye on a small watchlist of US stocks and ETFs. Many users are not traders, so use plain words and explain any term you use.",
+		"",
+		watchlist.length > 0
+			? `The user's watchlist right now (${watchlist.length} of ${WATCHLIST_CAP}): ${watchlist.join(", ")}.`
+			: `The user's watchlist is empty (it holds up to ${WATCHLIST_CAP} symbols).`,
 		"",
 		"Rules:",
 		"- Never give financial advice: no recommendations, price targets, predictions, or buy, sell or hold opinions. Politely decline and offer factual data instead.",
 		'- Never state prices or percentages, and never write any digits at all. The app shows the numbers from your tool results as tables; refer to them instead (for example "see the table above").',
 		"- Use the tools to read or change the watchlist and to fetch market data. Never guess data.",
-		"- Market data comes from the IEX feed only. Its volume is a fraction of the whole market, so say so when volume comes up. Use the timestamps: outside market hours the data is the last trade, so do not describe it as today's move.",
-		"- If the user asks about a symbol that is not on their watchlist, answer the question, then ask whether they would like to add it. If the watchlist is full, ask whether they would like to swap a symbol out. Never add it until they accept.",
+		"- Market data comes from the IEX exchange only. Its volume is a fraction of the whole market, so say so when volume comes up. Check the market status in the tool results: when the market is closed, the figures are from the last trading session, so never describe them as today's move.",
+		"- If the user asks about a symbol that is not on their watchlist, answer the question, then ask whether they would like to add it. Never offer to add a symbol that is already on the watchlist above. If the watchlist is full, ask whether they would like to swap a symbol out. Never add it until they accept.",
 		"- Always finish by calling the respond tool exactly once, with your answer as prose and the symbols your answer is about.",
+		"",
+		"What you can do: read and change the watchlist (US stocks and ETFs only), and fetch the latest snapshot for symbols: last price, change since the previous close, the day's range, and IEX volume.",
+		"What you cannot do: company fundamentals (market cap, earnings, revenue, dividends, P/E ratios), analyst ratings, predictions or forecasts, crypto, options, futures, non-US markets, or anything else the tools do not return.",
+		"When a question needs something you cannot do, say so plainly. If you show related data instead, say exactly what you are showing instead (for example: this is the latest snapshot, not last week's performance). Never present data as answering a question it does not answer.",
 	];
 	if (pendingOffer.length > 0) {
 		lines.push(
@@ -56,8 +72,15 @@ const RESPOND_REMINDER =
 	"Finish by calling the respond tool with your answer as prose and the symbols it is about.";
 
 export async function runAgentTurn(input: TurnInput): Promise<TurnResult> {
+	const watchlist = await input.getWatchlist();
 	const messages: ChatMessage[] = [
-		{ role: "system", content: buildSystemPrompt(input.pendingOffer) },
+		{
+			role: "system",
+			content: buildSystemPrompt({
+				watchlist,
+				pendingOffer: input.pendingOffer,
+			}),
+		},
 		...input.history.map((entry) => ({
 			role: entry.role,
 			content: entry.text,

@@ -36,11 +36,23 @@ export function renderTranscript(
 	container.replaceChildren(...nodes);
 }
 
+const BROKERAGE_NOTE = "For real-time prices, check your brokerage account.";
+
+/** Explains where a snapshot's figures come from and how current they are. */
 export function snapshotCaption(
-	_asOf: string,
-	_market: MarketClock | null | undefined,
+	asOf: string,
+	market: MarketClock | null | undefined,
 ): string {
-	throw new Error("Not implemented");
+	const time = formatAsOf(asOf);
+	const source =
+		"Prices and volume come from the IEX exchange only, so volume is a fraction of all trading and prices can differ slightly from other sources.";
+	if (market?.isOpen === false) {
+		return `Market closed. These figures are from the last trading session (checked at ${time}). ${source} ${BROKERAGE_NOTE}`;
+	}
+	if (market?.isOpen) {
+		return `Live data as of ${time}. ${source} ${BROKERAGE_NOTE}`;
+	}
+	return `Data as of ${time}. ${source} ${BROKERAGE_NOTE}`;
 }
 
 export function chatErrorMessage(code: string): string {
@@ -95,11 +107,15 @@ function renderEntry(entry: ChatEntry): HTMLElement {
 			return node;
 		}
 		case "snapshots":
-			return renderSnapshots(entry.asOf, entry.rows);
+			return renderSnapshots(entry.asOf, entry.market, entry.rows);
 	}
 }
 
-function renderSnapshots(asOf: string, rows: SnapshotRow[]): HTMLElement {
+function renderSnapshots(
+	asOf: string,
+	market: MarketClock | null | undefined,
+	rows: SnapshotRow[],
+): HTMLElement {
 	const figure = element("figure", "snapshot", "snapshots");
 	const scroller = document.createElement("div");
 	scroller.className = "snapshot-scroll";
@@ -136,7 +152,7 @@ function renderSnapshots(asOf: string, rows: SnapshotRow[]): HTMLElement {
 	}
 
 	const caption = document.createElement("figcaption");
-	caption.textContent = `As of ${formatAsOf(asOf)} · Source: IEX feed`;
+	caption.textContent = snapshotCaption(asOf, market);
 	scroller.append(table);
 	figure.append(scroller, caption);
 	return figure;

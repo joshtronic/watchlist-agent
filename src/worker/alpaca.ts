@@ -66,8 +66,20 @@ export async function checkAsset(
 	return { symbol, status: tradable ? "valid" : "not_tradable" };
 }
 
-export async function getClock(_config: AlpacaConfig): Promise<MarketClock> {
-	throw new Error("Not implemented");
+export async function getClock(config: AlpacaConfig): Promise<MarketClock> {
+	const response = await request(config, `${config.tradingBaseUrl}/v2/clock`);
+	const clock = await readJson<{
+		is_open?: boolean;
+		timestamp?: string;
+		next_open?: string;
+		next_close?: string;
+	}>(response);
+	return {
+		isOpen: clock.is_open === true,
+		timestamp: clock.timestamp ?? "",
+		nextOpen: clock.next_open ?? "",
+		nextClose: clock.next_close ?? "",
+	};
 }
 
 export async function getSnapshots(

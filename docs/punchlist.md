@@ -114,6 +114,17 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 - [x] Client SSE parser + chat UI + snapshot tables (rendered from data, text-only insertion).
 - [x] localStorage history (200 messages) + the "assistant's memory ends here" divider.
 
+## Phase 5b — Agent v2 (from hands-on testing)
+
+- [x] The current watchlist is in the system prompt every turn; never offer a symbol that is
+      already on it.
+- [x] Explicit boundaries: what the tools can't answer (fundamentals, ratings, predictions,
+      crypto, options, non-US), and say exactly what's shown instead on a miss.
+- [x] Market clock on snapshots; captions explain the IEX source and point to a brokerage for
+      real-time prices.
+- [ ] `get_price_history` tool and history tables.
+- [ ] `get_news` tool, news cards, and AI-assessed sentiment and type labels.
+
 ## Phase 6 — Limits and errors
 
 - [ ] Per-session rate limit: 10/min shared by chat and transcribe → `429` + `retryAfter`.

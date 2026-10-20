@@ -219,6 +219,19 @@ nicety.
   - The offer is only valid for the **user's very next message**. If that message doesn't
     accept it, the offer is dead and must not be acted on later.
 
+### Boundaries and context
+
+- **The current watchlist is in the system prompt on every turn,** so the model never has to
+  guess what's on it and never offers to add a symbol that's already there.
+- **The prompt lists what the tools can and cannot answer.** They can't answer fundamentals,
+  analyst ratings, predictions, crypto, options, futures, or non-US markets. On a miss the
+  assistant says so plainly. If it shows related data instead, it says exactly what that data
+  is, e.g. "this is the latest snapshot, not last week's performance".
+- **`get_snapshots` includes Alpaca's market clock** (`/v2/clock`). When the market is
+  closed, the figures are the last session's, never "today's".
+- **Table captions explain the source:** IEX only, and how current the figures are. They point
+  the user to their brokerage account for real-time prices.
+
 ### Pending add offer
 
 To keep this out of prompt-memory alone:
