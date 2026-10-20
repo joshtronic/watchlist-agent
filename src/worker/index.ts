@@ -1,3 +1,4 @@
+import { postChat } from "./chat-routes";
 import { createSession, deleteSession, getSession } from "./session-routes";
 import { applyStarter } from "./watchlist-routes";
 
@@ -22,6 +23,8 @@ export default {
 				return getSession(request, env);
 			case "DELETE /api/session":
 				return deleteSession(request, env);
+			case "POST /api/chat":
+				return postChat(request, env);
 			case "POST /api/watchlist/starter":
 				return applyStarter(request, env);
 			default:

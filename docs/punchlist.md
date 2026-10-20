@@ -110,9 +110,9 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 5 — Chat
 
-- [ ] `POST /api/chat` SSE: `tool_call`, `snapshots`, `watchlist`, `message`, `error`, `done`.
-- [ ] Client SSE parser + chat UI + snapshot tables (rendered from data, text-only insertion).
-- [ ] localStorage history (200 messages) + the "assistant's memory ends here" divider.
+- [x] `POST /api/chat` SSE: `tool_call`, `snapshots`, `watchlist`, `message`, `error`, `done`.
+- [x] Client SSE parser + chat UI + snapshot tables (rendered from data, text-only insertion).
+- [x] localStorage history (200 messages) + the "assistant's memory ends here" divider.
 
 ## Phase 6 — Limits and errors
 

@@ -1,6 +1,13 @@
 import { DurableObject } from "cloudflare:workers";
-import type { AiClient } from "./agent/ai-client";
+import {
+	type AiClient,
+	type AiRunner,
+	createAiClient,
+} from "./agent/ai-client";
 import type { HistoryMessage } from "./agent/loop";
+import { createToolbox } from "./agent/tools";
+import { alpacaConfig, checkAsset, getSnapshots } from "./alpaca";
+import { streamChatTurn } from "./chat";
 import {
 	type AddStatus,
 	normalizeSymbol,
@@ -34,16 +41,48 @@ export interface SessionRecord {
 
 export class SessionDO extends DurableObject<Env> {
 	// Overridable so tests can substitute a fake model.
-	aiClient = (): AiClient => {
-		throw new Error("Not implemented");
-	};
+	aiClient = (): AiClient => createAiClient(this.env.AI as unknown as AiRunner);
 
-	async chat(_message: string): Promise<ReadableStream<Uint8Array>> {
-		throw new Error("Not implemented");
+	// Chat turns run one at a time per session, so two tabs (or a double
+	// submit) can't interleave changes to the watchlist and history.
+	private turnQueue: Promise<unknown> = Promise.resolve();
+
+	async chat(message: string): Promise<ReadableStream<Uint8Array>> {
+		const ready = this.turnQueue;
+		let finished!: () => void;
+		this.turnQueue = new Promise<void>((resolve) => {
+			finished = resolve;
+		});
+		await ready;
+
+		const market = alpacaConfig(this.env);
+		const stream = streamChatTurn({
+			message,
+			ai: this.aiClient(),
+			toolbox: createToolbox({
+				getWatchlist: () => this.getWatchlist(),
+				addSymbols: (symbols) => this.addSymbols(symbols),
+				removeSymbols: (symbols) => this.removeSymbols(symbols),
+				checkAsset: (symbol) => checkAsset(market, symbol),
+				getSnapshots: (symbols) => getSnapshots(market, symbols),
+				now: () => new Date(),
+			}),
+			history: await this.getHistory(),
+			pendingOffer: await this.getPendingOffer(),
+			getWatchlist: () => this.getWatchlist(),
+			recordTurn: (turn) => this.recordTurn(turn),
+			clearPendingOffer: () => this.clearPendingOffer(),
+			now: () => Date.now(),
+		});
+
+		// Release the queue once the turn has streamed to the end.
+		const [forClient, forQueue] = stream.tee();
+		forQueue.pipeTo(new WritableStream()).finally(finished);
+		return forClient;
 	}
 
 	async clearPendingOffer(): Promise<void> {
-		throw new Error("Not implemented");
+		await this.ctx.storage.delete(PENDING_OFFER_KEY);
 	}
 
 	async create(now: number): Promise<void> {

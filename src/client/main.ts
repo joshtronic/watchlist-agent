@@ -1,5 +1,6 @@
 import "@fontsource-variable/figtree";
 import "./styles.css";
+import { mountChatPanel } from "./chat-panel";
 import { canSubmit, type GateState, gateErrorMessage } from "./gate";
 import { micIcon, sendIcon } from "./icons";
 import { clearLocalData } from "./local-data";
@@ -134,21 +135,24 @@ function showApp(watchlist: string[]) {
 					class="card"
 					aria-labelledby="watchlist-title"
 				></section>
-				<section class="card conversation" aria-label="Conversation">
-					<div class="conversation-empty">
-						<h2>Chat is on its way</h2>
-						<p class="muted">
-							Soon you'll be able to ask how your stocks are doing, right here.
-						</p>
-					</div>
-				</section>
+				<section
+					id="conversation"
+					class="card conversation"
+					aria-label="Conversation"
+				></section>
 			</main>
 			<footer class="composer">
-				<form class="composer-bar" aria-label="Ask about your stocks">
+				<form
+					id="composer"
+					class="composer-bar"
+					aria-label="Ask about your stocks"
+				>
 					<input
 						type="text"
 						aria-label="Message"
 						placeholder="Ask about your stocks…"
+						maxlength="500"
+						autocomplete="off"
 						disabled
 					/>
 					<button
@@ -168,10 +172,18 @@ function showApp(watchlist: string[]) {
 			</footer>
 		</div>
 	`;
-	mountWatchlistCard(find("#watchlist"), {
-		watchlist,
-		onStart: applyStarter,
-		onRefresh: () => window.location.reload(),
+	const showWatchlist = (symbols: string[]) =>
+		mountWatchlistCard(find("#watchlist"), {
+			watchlist: symbols,
+			onStart: applyStarter,
+			onRefresh: () => window.location.reload(),
+		});
+	showWatchlist(watchlist);
+
+	mountChatPanel({
+		conversation: find("#conversation"),
+		form: find<HTMLFormElement>("#composer"),
+		onWatchlist: showWatchlist,
 	});
 
 	mountLogout(find("#logout"), {

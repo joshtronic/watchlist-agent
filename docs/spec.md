@@ -333,6 +333,7 @@ UI states.
 | `rate_limited`             | Session over 10/min                 | "Slow down a little." (+ retry-after)                 |
 | `transcription_failed`     | Whisper error / empty transcript    | "Couldn't make that out. Try again or type it."       |
 | `no_session`               | Missing/unknown cookie              | Landing gate                                          |
+| `internal_error`           | Unexpected server failure mid-turn  | "Something went wrong. Please try again."             |
 
 Alpaca failures inside a tool are returned to the model as tool errors, so it can explain them.
 AI failures end the request with an `error` event.

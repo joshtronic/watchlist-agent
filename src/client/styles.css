@@ -374,8 +374,8 @@ h1:has(.logo-mark) {
 
 .conversation {
 	flex: 1;
-	display: grid;
-	place-items: center;
+	display: flex;
+	flex-direction: column;
 	min-height: 12rem;
 }
 
@@ -398,7 +398,122 @@ h1:has(.logo-mark) {
 }
 
 .conversation-empty {
+	margin: auto;
 	text-align: center;
+}
+
+/* Transcript: plain prose for the assistant, a soft panel for the user, and
+   data as tables. No chat bubbles. */
+.transcript {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.transcript:empty {
+	display: none;
+}
+
+.message {
+	max-width: 65ch;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.message-user {
+	align-self: flex-end;
+	padding: var(--space-3) var(--space-4);
+	border-radius: var(--radius-control);
+	background: var(--muted-fill);
+}
+
+.transcript > .alert {
+	margin: 0;
+}
+
+.chat-progress {
+	margin-top: var(--space-4);
+	font-size: 0.9375rem;
+}
+
+.memory-divider {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	font-size: 0.8125rem;
+	color: var(--ink-soft);
+}
+
+.memory-divider::before,
+.memory-divider::after {
+	content: "";
+	flex: 1;
+	border-top: 1px solid var(--line);
+}
+
+.snapshot {
+	margin: 0;
+}
+
+.snapshot-scroll {
+	overflow-x: auto;
+}
+
+.snapshot table {
+	width: 100%;
+	border-collapse: collapse;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.snapshot th,
+.snapshot td {
+	padding: var(--space-2) var(--space-3);
+	text-align: right;
+	border-bottom: 1px solid var(--line);
+}
+
+.snapshot th:first-child {
+	text-align: left;
+	padding-left: 0;
+}
+
+.snapshot thead th {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--ink-soft);
+}
+
+.snapshot tbody th {
+	font-weight: 650;
+	letter-spacing: 0.02em;
+}
+
+.snapshot tr[data-direction="up"] td:nth-child(3),
+.snapshot tr[data-direction="up"] td:nth-child(4) {
+	color: var(--up);
+}
+
+.snapshot tr[data-direction="down"] td:nth-child(3),
+.snapshot tr[data-direction="down"] td:nth-child(4) {
+	color: var(--down);
+}
+
+.off-watchlist {
+	margin-left: var(--space-2);
+	padding: 0 var(--space-2);
+	border-radius: var(--radius-pill);
+	background: var(--muted-fill);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0;
+	color: var(--ink-soft);
+}
+
+.snapshot figcaption {
+	margin-top: var(--space-2);
+	font-size: 0.8125rem;
+	color: var(--ink-soft);
 }
 
 .composer {
