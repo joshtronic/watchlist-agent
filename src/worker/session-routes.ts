@@ -1,3 +1,4 @@
+import { json, sessionStub } from "./http";
 import {
 	expiredSessionCookie,
 	newSessionId,
@@ -42,13 +43,14 @@ export async function getSession(
 	const id = readSessionId(request);
 	if (!id) return json({ error: "no_session" }, 401);
 
-	const activity = await sessionStub(env, id).touch(Date.now());
+	const session = sessionStub(env, id);
+	const activity = await session.touch(Date.now());
 	if (!activity) {
 		return json({ error: "no_session" }, 401, expiredSessionCookie());
 	}
 
 	const cookie = activity.refreshCookie ? sessionCookie(id) : undefined;
-	return json({ watchlist: [] }, 200, cookie);
+	return json({ watchlist: await session.getWatchlist() }, 200, cookie);
 }
 
 export async function deleteSession(
@@ -62,16 +64,6 @@ export async function deleteSession(
 		status: 204,
 		headers: { "set-cookie": expiredSessionCookie() },
 	});
-}
-
-function sessionStub(env: Env, id: string) {
-	return env.SESSION.get(env.SESSION.idFromName(id));
-}
-
-function json(body: unknown, status: number, cookie?: string): Response {
-	const headers = new Headers();
-	if (cookie) headers.set("set-cookie", cookie);
-	return Response.json(body, { status, headers });
 }
 
 async function readJsonObject(
