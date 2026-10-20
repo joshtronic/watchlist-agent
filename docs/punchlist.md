@@ -127,8 +127,8 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 6 — Limits and errors
 
-- [ ] Per-session rate limit: 10/min shared by chat and transcribe → `429` + `retryAfter`.
-- [ ] Error code → UI state mapping for every code in spec §11.
+- [x] Per-session rate limit: 10/min shared by chat and transcribe → `429` + `retryAfter`.
+- [x] Error code → UI state mapping for every code in spec §11.
 
 ## Phase 7 — Voice
 

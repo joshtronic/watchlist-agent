@@ -17,6 +17,9 @@ export async function postChat(request: Request, env: Env): Promise<Response> {
 		return json({ error: "no_session" }, 401, expiredSessionCookie());
 	}
 
+	const allowed = await session.allowRequest(Date.now());
+	if (!allowed.ok) return rateLimited(allowed.retryAfter);
+
 	const message = await readMessage(request);
 	if (!message) return json({ error: "bad_request" }, 400);
 
@@ -26,6 +29,13 @@ export async function postChat(request: Request, env: Env): Promise<Response> {
 	});
 	if (activity.refreshCookie) headers.set("set-cookie", sessionCookie(id));
 	return new Response(await session.chat(message), { headers });
+}
+
+export function rateLimited(retryAfter: number): Response {
+	return Response.json(
+		{ error: "rate_limited", retryAfter },
+		{ status: 429, headers: { "retry-after": String(retryAfter) } },
+	);
 }
 
 async function readMessage(request: Request): Promise<string | null> {

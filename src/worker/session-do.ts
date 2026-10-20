@@ -30,6 +30,10 @@ const SESSION_KEY = "session";
 const WATCHLIST_KEY = "watchlist";
 const HISTORY_KEY = "history";
 const PENDING_OFFER_KEY = "pendingOffer";
+const RATE_LIMIT_KEY = "rateLimit";
+// Chat and transcription share this budget.
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60 * 1000;
 // The last ten exchanges, as user and assistant messages.
 const HISTORY_LIMIT = 20;
 
@@ -203,10 +207,24 @@ export class SessionDO extends DurableObject<Env> {
 		});
 	}
 
+	/** A sliding window of ten requests a minute; refusals don't count. */
 	async allowRequest(
-		_now: number,
+		now: number,
 	): Promise<{ ok: true } | { ok: false; retryAfter: number }> {
-		throw new Error("Not implemented");
+		const recent = (
+			(await this.ctx.storage.get<number[]>(RATE_LIMIT_KEY)) ?? []
+		).filter((at) => now - at < RATE_WINDOW_MS);
+
+		if (recent.length >= RATE_LIMIT) {
+			const oldest = Math.min(...recent);
+			return {
+				ok: false,
+				retryAfter: Math.ceil((oldest + RATE_WINDOW_MS - now) / 1000),
+			};
+		}
+
+		await this.ctx.storage.put(RATE_LIMIT_KEY, [...recent, now]);
+		return { ok: true };
 	}
 
 	override async alarm(): Promise<void> {
