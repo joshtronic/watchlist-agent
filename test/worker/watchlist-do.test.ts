@@ -1,18 +1,6 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-
-const STARTER = [
-	"NVDA",
-	"AAPL",
-	"MSFT",
-	"MU",
-	"AMZN",
-	"AMD",
-	"META",
-	"GOOGL",
-	"TSLA",
-	"SPCX",
-];
+import { STARTER_WATCHLIST } from "../../src/worker/watchlist";
 
 let counter = 0;
 function stub() {
@@ -85,7 +73,7 @@ describe("SessionDO watchlist", () => {
 
 	it("stops at ten symbols and reports the rest as over the cap", async () => {
 		const session = stub();
-		await session.addSymbols(STARTER.slice(0, 9));
+		await session.addSymbols(STARTER_WATCHLIST.slice(0, 9));
 
 		const results = await session.addSymbols(["NET", "QQQ"]);
 
@@ -124,8 +112,8 @@ describe("SessionDO starter watchlist", () => {
 	it("fills an empty watchlist with QQQ's top ten, in order", async () => {
 		const session = stub();
 
-		expect(await session.applyStarter()).toEqual(STARTER);
-		expect(await session.getWatchlist()).toEqual(STARTER);
+		expect(await session.applyStarter()).toEqual(STARTER_WATCHLIST);
+		expect(await session.getWatchlist()).toEqual(STARTER_WATCHLIST);
 	});
 
 	it("leaves a non-empty watchlist untouched", async () => {

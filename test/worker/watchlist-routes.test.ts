@@ -2,19 +2,7 @@ import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import worker from "../../src/worker/index";
 import { newSessionId } from "../../src/worker/session-cookie";
-
-const STARTER = [
-	"NVDA",
-	"AAPL",
-	"MSFT",
-	"MU",
-	"AMZN",
-	"AMD",
-	"META",
-	"GOOGL",
-	"TSLA",
-	"SPCX",
-];
+import { STARTER_WATCHLIST } from "../../src/worker/watchlist";
 
 function postStarter(cookie?: string) {
 	const headers = new Headers();
@@ -45,8 +33,8 @@ describe("POST /api/watchlist/starter", () => {
 		const res = await postStarter(`wl_session=${id}`);
 
 		expect(res.status).toBe(200);
-		expect(await res.json()).toEqual({ watchlist: STARTER });
-		expect(await sessionStub(id).getWatchlist()).toEqual(STARTER);
+		expect(await res.json()).toEqual({ watchlist: STARTER_WATCHLIST });
+		expect(await sessionStub(id).getWatchlist()).toEqual(STARTER_WATCHLIST);
 		expect(res.headers.has("set-cookie")).toBe(false);
 	});
 
