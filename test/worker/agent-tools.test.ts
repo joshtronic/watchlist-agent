@@ -31,6 +31,15 @@ function snapshot(symbol: string): MarketSnapshot {
 	};
 }
 
+// Trading days around a one-week window ending Monday 2026-10-19.
+const BARS = [
+	{ date: "2026-10-08", open: 90, high: 95, low: 88, close: 92, volume: 1 },
+	{ date: "2026-10-09", open: 92, high: 99, low: 91, close: 98, volume: 1 },
+	{ date: "2026-10-12", open: 98, high: 104, low: 97, close: 100, volume: 1 },
+	{ date: "2026-10-16", open: 100, high: 112, low: 96, close: 110, volume: 1 },
+	{ date: "2026-10-19", open: 110, high: 111, low: 104, close: 105, volume: 1 },
+];
+
 function deps(overrides: Partial<ToolDeps> = {}): ToolDeps {
 	let watchlist = ["NET", "AAPL"];
 	return {
@@ -59,15 +68,19 @@ function deps(overrides: Partial<ToolDeps> = {}): ToolDeps {
 		})),
 		getSnapshots: vi.fn(async (symbols: string[]) => symbols.map(snapshot)),
 		getClock: vi.fn(async () => CLOCK),
+		getDailyBars: vi.fn(async (symbols: string[]) =>
+			Object.fromEntries(symbols.map((symbol) => [symbol, BARS])),
+		),
 		now: () => NOW,
 		...overrides,
 	};
 }
 
 describe("TOOL_DEFINITIONS", () => {
-	it("declares exactly the five agent tools", () => {
+	it("declares exactly the agent tools", () => {
 		expect(TOOL_DEFINITIONS.map((tool) => tool.name).sort()).toEqual([
 			"add_symbols",
+			"get_price_history",
 			"get_snapshots",
 			"list_watchlist",
 			"remove_symbols",
@@ -248,6 +261,162 @@ describe("toolbox", () => {
 			});
 
 			expect(outcome.events).toEqual([]);
+		});
+	});
+
+	describe("get_price_history", () => {
+		it("rejects a missing or unknown period", async () => {
+			const toolbox = createToolbox(deps());
+
+			for (const args of [{}, { period: "decade" }, { period: 7 }]) {
+				const outcome = await toolbox.execute({
+					name: "get_price_history",
+					arguments: args,
+				});
+				expect(outcome.result).toMatchObject({ error: "invalid_arguments" });
+			}
+		});
+
+		it("measures the change from the last close before the period", async () => {
+			const d = deps();
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_price_history",
+				arguments: { period: "1w", symbols: ["net"] },
+			});
+
+			// The week starts 2026-10-12, so the baseline is 2026-10-09's close.
+			const row = {
+				symbol: "NET",
+				onWatchlist: true,
+				startDate: "2026-10-09",
+				endDate: "2026-10-19",
+				startPrice: 98,
+				endPrice: 105,
+				change: 7,
+				changePct: (7 / 98) * 100,
+				high: 112,
+				low: 96,
+			};
+			expect(outcome).toEqual({
+				result: {
+					period: "1w",
+					from: "2026-10-12",
+					rows: [row],
+					unavailable: [],
+				},
+				events: [
+					{ type: "history", period: "1w", from: "2026-10-12", rows: [row] },
+				],
+			});
+		});
+
+		it("asks for bars from before the period and ends at least fifteen minutes ago", async () => {
+			const d = deps();
+
+			await createToolbox(d).execute({
+				name: "get_price_history",
+				arguments: { period: "1w" },
+			});
+
+			const [symbols, start, end] =
+				vi.mocked(d.getDailyBars).mock.calls[0] ?? [];
+			expect(symbols).toEqual(["NET", "AAPL"]);
+			expect(new Date(String(start)).getTime()).toBeLessThan(
+				new Date("2026-10-12T00:00:00Z").getTime(),
+			);
+			expect(
+				NOW.getTime() - new Date(String(end)).getTime(),
+			).toBeGreaterThanOrEqual(15 * 60 * 1000);
+		});
+
+		it.each([
+			["1m", "2026-09-19"],
+			["3m", "2026-07-19"],
+			["6m", "2026-04-19"],
+			["ytd", "2026-01-01"],
+			["1y", "2025-10-19"],
+		])("starts the %s period on %s", async (period, from) => {
+			const outcome = await createToolbox(deps()).execute({
+				name: "get_price_history",
+				arguments: { period },
+			});
+
+			expect(outcome.result).toMatchObject({ period, from });
+		});
+
+		it("falls back to the first open when there is no earlier close", async () => {
+			const d = deps({
+				getDailyBars: vi.fn(async () => ({ NET: BARS.slice(2) })),
+			});
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_price_history",
+				arguments: { period: "1w", symbols: ["NET"] },
+			});
+
+			expect(outcome.result).toMatchObject({
+				rows: [{ startDate: "2026-10-12", startPrice: 98, endPrice: 105 }],
+			});
+		});
+
+		it("returns an empty row for a symbol with no bars in the period", async () => {
+			const d = deps({ getDailyBars: vi.fn(async () => ({})) });
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_price_history",
+				arguments: { period: "1w", symbols: ["NET"] },
+			});
+
+			expect(outcome.result).toMatchObject({
+				rows: [
+					{
+						symbol: "NET",
+						startPrice: null,
+						endPrice: null,
+						change: null,
+						changePct: null,
+					},
+				],
+			});
+		});
+
+		it("checks off-list symbols before looking them up", async () => {
+			const d = deps({
+				checkAsset: vi.fn(async (symbol: string) => ({
+					symbol,
+					status: symbol === "ZZZZ" ? ("invalid" as const) : ("valid" as const),
+				})),
+			});
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_price_history",
+				arguments: { period: "1w", symbols: ["SNOW", "ZZZZ"] },
+			});
+
+			expect(vi.mocked(d.getDailyBars).mock.calls[0]?.[0]).toEqual(["SNOW"]);
+			expect(outcome.result).toMatchObject({
+				rows: [{ symbol: "SNOW", onWatchlist: false }],
+				unavailable: [{ symbol: "ZZZZ", status: "invalid" }],
+			});
+		});
+
+		it("returns market data errors to the model", async () => {
+			const d = deps({
+				getDailyBars: vi.fn(async () => {
+					throw new MarketDataError("market_data_error", "403");
+				}),
+			});
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_price_history",
+				arguments: { period: "1w" },
+			});
+
+			expect(outcome).toEqual({
+				result: expect.objectContaining({ error: "market_data_error" }),
+				events: [],
+			});
 		});
 	});
 

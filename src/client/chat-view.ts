@@ -5,7 +5,12 @@ import {
 	formatPrice,
 	formatVolume,
 } from "./format";
-import type { ChatEntry, MarketClock, SnapshotRow } from "./history-store";
+import type {
+	ChatEntry,
+	HistoryRow,
+	MarketClock,
+	SnapshotRow,
+} from "./history-store";
 
 const COLUMNS: [label: string, cell: (row: SnapshotRow) => string][] = [
 	["Last price", (row) => formatPrice(row.price)],
@@ -53,6 +58,10 @@ export function snapshotCaption(
 		return `Live data as of ${time}. ${source} ${BROKERAGE_NOTE}`;
 	}
 	return `Data as of ${time}. ${source} ${BROKERAGE_NOTE}`;
+}
+
+export function historyCaption(_period: string, _rows: HistoryRow[]): string {
+	throw new Error("Not implemented");
 }
 
 export function chatErrorMessage(code: string): string {

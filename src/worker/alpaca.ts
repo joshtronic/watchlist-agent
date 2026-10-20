@@ -32,6 +32,15 @@ export interface MarketClock {
 	nextClose: string;
 }
 
+export interface DailyBar {
+	date: string;
+	open: number;
+	high: number;
+	low: number;
+	close: number;
+	volume: number;
+}
+
 export class MarketDataError extends Error {
 	readonly code: "market_data_error" | "market_data_rate_limited";
 
@@ -80,6 +89,15 @@ export async function getClock(config: AlpacaConfig): Promise<MarketClock> {
 		nextOpen: clock.next_open ?? "",
 		nextClose: clock.next_close ?? "",
 	};
+}
+
+export async function getDailyBars(
+	_config: AlpacaConfig,
+	_symbols: string[],
+	_start: string,
+	_end: string,
+): Promise<Record<string, DailyBar[]>> {
+	throw new Error("Not implemented");
 }
 
 export async function getSnapshots(

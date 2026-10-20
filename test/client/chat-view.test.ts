@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
 	chatErrorMessage,
 	describeToolCall,
+	historyCaption,
 	renderTranscript,
 	snapshotCaption,
 } from "../../src/client/chat-view";
@@ -141,6 +142,65 @@ describe("renderTranscript", () => {
 	});
 });
 
+describe("history tables", () => {
+	const historyRow = {
+		symbol: "AMD",
+		onWatchlist: true,
+		startDate: "2026-10-09",
+		endDate: "2026-10-16",
+		startPrice: 500,
+		endPrice: 537.86,
+		change: 37.86,
+		changePct: 7.572,
+		high: 554.27,
+		low: 495.1,
+	};
+
+	it("renders the period's figures from the data", () => {
+		renderTranscript(
+			container,
+			[
+				{
+					kind: "history",
+					period: "1w",
+					from: "2026-10-12",
+					rows: [historyRow],
+					at: 1,
+				},
+			],
+			null,
+		);
+
+		const cells = [
+			...container.querySelectorAll(
+				'[data-entry="history"] tbody td, [data-entry="history"] tbody th',
+			),
+		].map((cell) => cell.textContent?.trim());
+		expect(cells).toEqual(
+			expect.arrayContaining([
+				"AMD",
+				"500.00",
+				"537.86",
+				"+37.86",
+				"+7.57%",
+				"554.27",
+				"495.10",
+			]),
+		);
+	});
+
+	it("explains the period, the source and the delay", () => {
+		const caption = historyCaption("1w", [historyRow]);
+
+		expect(caption).toMatch(/past week/i);
+		expect(caption).toMatch(/Oct 9/);
+		expect(caption).toMatch(/Oct 16/);
+		expect(caption).toMatch(/all US exchanges/i);
+		expect(caption).toMatch(/delayed/i);
+		expect(caption).toMatch(/brokerage/i);
+	});
+});
+
 describe("snapshotCaption", () => {
 	const asOf = "2026-10-19T19:42:10Z";
 	const clock = (isOpen: boolean) => ({
@@ -210,6 +270,11 @@ describe("describeToolCall", () => {
 		["add_symbols", { symbols: ["SNOW"] }, "Adding SNOW…"],
 		["remove_symbols", { symbols: ["TSLA"] }, "Removing TSLA…"],
 		["list_watchlist", {}, "Checking your watchlist…"],
+		[
+			"get_price_history",
+			{ symbols: ["AMD"], period: "1w" },
+			"Looking up price history for AMD…",
+		],
 		["mystery", {}, "Working…"],
 	])("%s %j → %s", (name, args, expected) => {
 		expect(describeToolCall(name, args)).toBe(expected);

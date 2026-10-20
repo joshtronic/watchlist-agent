@@ -336,6 +336,10 @@ describe("buildSystemPrompt", () => {
 		expect(prompt()).toMatch(/only refer to a table you fetched in this turn/i);
 	});
 
+	it("tells the model it can answer questions about a period", () => {
+		expect(prompt()).toMatch(/price history/i);
+	});
+
 	it("warns against calling a closed session today's move", () => {
 		expect(prompt()).toMatch(/market is closed/i);
 	});

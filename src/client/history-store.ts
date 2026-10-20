@@ -21,6 +21,19 @@ export interface MarketClock {
 	nextClose: string;
 }
 
+export interface HistoryRow {
+	symbol: string;
+	onWatchlist: boolean;
+	startDate: string | null;
+	endDate: string | null;
+	startPrice: number | null;
+	endPrice: number | null;
+	change: number | null;
+	changePct: number | null;
+	high: number | null;
+	low: number | null;
+}
+
 export type ChatEntry =
 	| { kind: "user"; text: string; at: number }
 	| { kind: "assistant"; text: string; at: number }
@@ -29,6 +42,13 @@ export type ChatEntry =
 			asOf: string;
 			market?: MarketClock | null;
 			rows: SnapshotRow[];
+			at: number;
+	  }
+	| {
+			kind: "history";
+			period: string;
+			from: string;
+			rows: HistoryRow[];
 			at: number;
 	  }
 	| { kind: "error"; code: string; at: number };

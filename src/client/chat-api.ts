@@ -1,4 +1,4 @@
-import type { MarketClock, SnapshotRow } from "./history-store";
+import type { HistoryRow, MarketClock, SnapshotRow } from "./history-store";
 import { parseSse } from "./sse";
 
 export type ChatEvent =
@@ -10,6 +10,7 @@ export type ChatEvent =
 			market: MarketClock | null;
 			rows: SnapshotRow[];
 	  }
+	| { type: "history"; period: string; from: string; rows: HistoryRow[] }
 	| { type: "message"; prose: string; symbols: string[] }
 	| { type: "error"; code: string }
 	| { type: "done" };

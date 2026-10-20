@@ -5,6 +5,7 @@ import {
 	alpacaConfig,
 	checkAsset,
 	getClock,
+	getDailyBars,
 	getSnapshots,
 	MarketDataError,
 } from "../../src/worker/alpaca";
@@ -168,6 +169,106 @@ describe("getClock", () => {
 		mockFetch(response);
 
 		await expectMarketDataError(getClock(config), code);
+	});
+});
+
+describe("getDailyBars", () => {
+	const bar = (t: string, c: number) => ({
+		t,
+		o: c - 1,
+		h: c + 2,
+		l: c - 3,
+		c,
+		v: 1000,
+		n: 10,
+		vw: c,
+	});
+
+	it("makes no request for an empty list", async () => {
+		const spy = mockFetch(Response.json({ bars: {} }));
+
+		expect(await getDailyBars(config, [], "2026-10-01", "2026-10-19")).toEqual(
+			{},
+		);
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it("asks for split-adjusted daily bars from all exchanges", async () => {
+		const spy = mockFetch(Response.json({ bars: {}, next_page_token: null }));
+
+		await getDailyBars(
+			config,
+			["AMD", "NET"],
+			"2026-10-02T00:00:00.000Z",
+			"2026-10-19T19:26:00.000Z",
+		);
+
+		const { url, headers } = lastRequest(spy);
+		expect(url.origin + url.pathname).toBe("https://data.test/v2/stocks/bars");
+		expect(Object.fromEntries(url.searchParams)).toMatchObject({
+			symbols: "AMD,NET",
+			timeframe: "1Day",
+			start: "2026-10-02T00:00:00.000Z",
+			end: "2026-10-19T19:26:00.000Z",
+			feed: "sip",
+			adjustment: "split",
+		});
+		expect(headers.get("APCA-API-KEY-ID")).toBe("key-id");
+	});
+
+	it("maps bars to dated daily rows per symbol", async () => {
+		mockFetch(
+			Response.json({
+				bars: { AMD: [bar("2026-10-16T04:00:00Z", 520)] },
+				next_page_token: null,
+			}),
+		);
+
+		expect(await getDailyBars(config, ["AMD"], "a", "b")).toEqual({
+			AMD: [
+				{
+					date: "2026-10-16",
+					open: 519,
+					high: 522,
+					low: 517,
+					close: 520,
+					volume: 1000,
+				},
+			],
+		});
+	});
+
+	it("follows pagination and merges the pages", async () => {
+		const spy = vi
+			.spyOn(globalThis, "fetch")
+			.mockImplementationOnce(async () =>
+				Response.json({
+					bars: { AMD: [bar("2026-10-15T04:00:00Z", 510)] },
+					next_page_token: "page-2",
+				}),
+			)
+			.mockImplementationOnce(async () =>
+				Response.json({
+					bars: {
+						AMD: [bar("2026-10-16T04:00:00Z", 520)],
+						NET: [bar("2026-10-16T04:00:00Z", 300)],
+					},
+					next_page_token: null,
+				}),
+			);
+
+		const bars = await getDailyBars(config, ["AMD", "NET"], "a", "b");
+
+		expect(spy).toHaveBeenCalledTimes(2);
+		expect(lastRequest(spy).url.searchParams.get("page_token")).toBe("page-2");
+		expect(bars.AMD?.map((b) => b.close)).toEqual([510, 520]);
+		expect(bars.NET?.map((b) => b.close)).toEqual([300]);
+	});
+
+	it.each(failures)("throws on %s", async (_label, response, code) => {
+		mockFetch(response);
+
+		await expectMarketDataError(getDailyBars(config, ["AMD"], "a", "b"), code);
 	});
 });
 

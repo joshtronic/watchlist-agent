@@ -1,5 +1,6 @@
 import {
 	type AssetCheck,
+	type DailyBar,
 	type MarketClock,
 	MarketDataError,
 	type MarketSnapshot,
@@ -20,9 +21,25 @@ export interface SnapshotRow extends MarketSnapshot {
 	onWatchlist: boolean;
 }
 
+export type HistoryPeriod = "1w" | "1m" | "3m" | "6m" | "ytd" | "1y";
+
+export interface HistoryRow {
+	symbol: string;
+	onWatchlist: boolean;
+	startDate: string | null;
+	endDate: string | null;
+	startPrice: number | null;
+	endPrice: number | null;
+	change: number | null;
+	changePct: number | null;
+	high: number | null;
+	low: number | null;
+}
+
 export type AgentEvent =
 	| { type: "tool_call"; name: string; args: unknown }
 	| { type: "watchlist"; symbols: string[] }
+	| { type: "history"; period: HistoryPeriod; from: string; rows: HistoryRow[] }
 	| {
 			type: "snapshots";
 			asOf: string;
@@ -46,6 +63,11 @@ export interface ToolDeps {
 	checkAsset(symbol: string): Promise<AssetCheck>;
 	getSnapshots(symbols: string[]): Promise<MarketSnapshot[]>;
 	getClock(): Promise<MarketClock>;
+	getDailyBars(
+		symbols: string[],
+		start: string,
+		end: string,
+	): Promise<Record<string, DailyBar[]>>;
 	now(): Date;
 }
 
