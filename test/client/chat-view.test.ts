@@ -317,6 +317,9 @@ describe("chatErrorMessage", () => {
 		"rate_limited",
 		"network",
 		"no_session",
+		"transcription_failed",
+		"mic_unavailable",
+		"audio_too_large",
 	];
 
 	it("has a distinct message for each known code", () => {
