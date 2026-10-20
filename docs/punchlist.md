@@ -133,5 +133,9 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 9 — Polish
 
-- [ ] UI design pass.
+- [x] UI design pass: done early as the Warm Consumer App world (light and dark), recorded in `DESIGN.md`.
 - [ ] README: setup, scripts and deploy.
+
+## Later (after the initial build)
+
+- [ ] Move the watchlist cap (`WATCHLIST_CAP`, currently 10) out of code into configuration (a Wrangler var).

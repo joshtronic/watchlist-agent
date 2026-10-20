@@ -188,6 +188,17 @@ describe("GET /api/session", () => {
 		expect(session?.lastActive).toBeGreaterThanOrEqual(before);
 	});
 
+	it("returns the stored watchlist", async () => {
+		const id = await existingSession();
+		await sessionStub(id).addSymbols(["NET", "QQQ"]);
+
+		const res = await call("GET", "/api/session", {
+			cookie: `wl_session=${id}`,
+		});
+
+		expect(await res.json()).toEqual({ watchlist: ["NET", "QQQ"] });
+	});
+
 	it("does not re-issue a cookie issued within the last day", async () => {
 		const id = await existingSession();
 

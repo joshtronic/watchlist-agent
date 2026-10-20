@@ -1,4 +1,5 @@
 import { DurableObject } from "cloudflare:workers";
+import type { AddStatus, RemoveStatus, SymbolResult } from "./watchlist";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const INACTIVITY_WIPE_MS = 365 * DAY_MS;
@@ -41,6 +42,24 @@ export class SessionDO extends DurableObject<Env> {
 	async destroy(): Promise<void> {
 		await this.ctx.storage.deleteAlarm();
 		await this.ctx.storage.deleteAll();
+	}
+
+	async getWatchlist(): Promise<string[]> {
+		throw new Error("Not implemented");
+	}
+
+	async addSymbols(_symbols: string[]): Promise<SymbolResult<AddStatus>[]> {
+		throw new Error("Not implemented");
+	}
+
+	async removeSymbols(
+		_symbols: string[],
+	): Promise<SymbolResult<RemoveStatus>[]> {
+		throw new Error("Not implemented");
+	}
+
+	async applyStarter(): Promise<string[] | null> {
+		throw new Error("Not implemented");
 	}
 
 	override async alarm(): Promise<void> {
