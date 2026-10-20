@@ -117,8 +117,24 @@ describe("runAgentTurn", () => {
 			{ type: "tool_call", name: "list_watchlist", args: {} },
 			{ type: "watchlist", symbols: ["NET"] },
 		]);
-		expect(requests[1]?.at(-1)).toEqual({
+		// The real model ignores a tool result unless it follows its own
+		// tool call and carries the matching id.
+		const [assistantCall, toolResult] = requests[1]?.slice(-2) ?? [];
+		const id = assistantCall?.tool_calls?.[0]?.id;
+		expect(assistantCall).toEqual({
+			role: "assistant",
+			content: "",
+			tool_calls: [
+				{
+					id: expect.any(String),
+					type: "function",
+					function: { name: "list_watchlist", arguments: "{}" },
+				},
+			],
+		});
+		expect(toolResult).toEqual({
 			role: "tool",
+			tool_call_id: id,
 			name: "list_watchlist",
 			content: JSON.stringify({ symbols: ["NET"] }),
 		});
