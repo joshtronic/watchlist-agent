@@ -25,6 +25,13 @@ export interface MarketSnapshot {
 	ask: number | null;
 }
 
+export interface MarketClock {
+	isOpen: boolean;
+	timestamp: string;
+	nextOpen: string;
+	nextClose: string;
+}
+
 export class MarketDataError extends Error {
 	readonly code: "market_data_error" | "market_data_rate_limited";
 
@@ -57,6 +64,10 @@ export async function checkAsset(
 		asset.status === "active" &&
 		asset.tradable === true;
 	return { symbol, status: tradable ? "valid" : "not_tradable" };
+}
+
+export async function getClock(_config: AlpacaConfig): Promise<MarketClock> {
+	throw new Error("Not implemented");
 }
 
 export async function getSnapshots(

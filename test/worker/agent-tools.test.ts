@@ -7,6 +7,12 @@ import {
 import { MarketDataError, type MarketSnapshot } from "../../src/worker/alpaca";
 
 const NOW = new Date("2026-10-19T19:42:00Z");
+const CLOCK = {
+	isOpen: false,
+	timestamp: "2026-10-19T19:42:00-04:00",
+	nextOpen: "2026-10-20T09:30:00-04:00",
+	nextClose: "2026-10-20T16:00:00-04:00",
+};
 
 function snapshot(symbol: string): MarketSnapshot {
 	return {
@@ -52,6 +58,7 @@ function deps(overrides: Partial<ToolDeps> = {}): ToolDeps {
 			status: "valid" as const,
 		})),
 		getSnapshots: vi.fn(async (symbols: string[]) => symbols.map(snapshot)),
+		getClock: vi.fn(async () => CLOCK),
 		now: () => NOW,
 		...overrides,
 	};
@@ -259,8 +266,34 @@ describe("toolbox", () => {
 			];
 			expect(d.checkAsset).not.toHaveBeenCalled();
 			expect(outcome).toEqual({
-				result: { asOf: NOW.toISOString(), rows, unavailable: [] },
-				events: [{ type: "snapshots", asOf: NOW.toISOString(), rows }],
+				result: {
+					asOf: NOW.toISOString(),
+					market: CLOCK,
+					rows,
+					unavailable: [],
+				},
+				events: [
+					{ type: "snapshots", asOf: NOW.toISOString(), market: CLOCK, rows },
+				],
+			});
+		});
+
+		it("still returns snapshots when the market clock is unavailable", async () => {
+			const d = deps({
+				getClock: vi.fn(async () => {
+					throw new MarketDataError("market_data_error", "500");
+				}),
+			});
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_snapshots",
+				arguments: {},
+			});
+
+			expect(outcome.result).toMatchObject({ market: null });
+			expect(outcome.events[0]).toMatchObject({
+				type: "snapshots",
+				market: null,
 			});
 		});
 
@@ -281,6 +314,7 @@ describe("toolbox", () => {
 			expect(d.getSnapshots).toHaveBeenCalledWith(["NET", "SNOW"]);
 			expect(outcome.result).toEqual({
 				asOf: NOW.toISOString(),
+				market: CLOCK,
 				rows: [
 					{ ...snapshot("NET"), onWatchlist: true },
 					{ ...snapshot("SNOW"), onWatchlist: false },

@@ -78,7 +78,10 @@ describe("runAgentTurn", () => {
 		await runAgentTurn(input);
 
 		expect(requests[0]).toEqual([
-			{ role: "system", content: buildSystemPrompt([]) },
+			{
+				role: "system",
+				content: buildSystemPrompt({ watchlist: ["NET"], pendingOffer: [] }),
+			},
 			{ role: "user", content: "Hi" },
 			{ role: "assistant", content: "Hello!" },
 			{ role: "user", content: "How's my watchlist doing?" },
@@ -296,23 +299,50 @@ describe("runAgentTurn", () => {
 	});
 });
 
+const prompt = (watchlist: string[] = [], pendingOffer: string[] = []) =>
+	buildSystemPrompt({ watchlist, pendingOffer });
+
 describe("buildSystemPrompt", () => {
 	it("forbids advice and stated figures, and requires respond", () => {
-		const prompt = buildSystemPrompt([]);
+		const text = prompt();
 
-		expect(prompt).toMatch(/financial advice/i);
-		expect(prompt).toMatch(/never state prices or percentages/i);
-		expect(prompt).toMatch(/\brespond\b/);
-		expect(prompt).toMatch(/IEX/);
+		expect(text).toMatch(/financial advice/i);
+		expect(text).toMatch(/never state prices or percentages/i);
+		expect(text).toMatch(/\brespond\b/);
+		expect(text).toMatch(/IEX/);
+	});
+
+	it("tells the model what is on the watchlist right now", () => {
+		const text = prompt(["NET", "AAPL"]);
+
+		expect(text).toContain("NET, AAPL");
+		expect(text).toMatch(/never offer to add a symbol that is already/i);
+	});
+
+	it("says when the watchlist is empty", () => {
+		expect(prompt()).toMatch(/watchlist is empty/i);
+	});
+
+	it("draws clear boundaries around what the tools cannot answer", () => {
+		const text = prompt();
+
+		for (const topic of [/market cap/i, /earnings/i, /crypto/i, /predict/i]) {
+			expect(text).toMatch(topic);
+		}
+		expect(text).toMatch(/say exactly what you are showing instead/i);
+	});
+
+	it("warns against calling a closed session today's move", () => {
+		expect(prompt()).toMatch(/market is closed/i);
 	});
 
 	it("mentions a pending offer only when there is one", () => {
-		expect(buildSystemPrompt([])).not.toMatch(/pending offer/i);
+		expect(prompt()).not.toMatch(/pending offer/i);
 
-		const prompt = buildSystemPrompt(["SNOW", "DDOG"]);
-		expect(prompt).toMatch(/pending offer/i);
-		expect(prompt).toContain("SNOW");
-		expect(prompt).toContain("DDOG");
-		expect(prompt).toMatch(/this message only/i);
+		const text = prompt([], ["SNOW", "DDOG"]);
+		expect(text).toMatch(/pending offer/i);
+		expect(text).toContain("SNOW");
+		expect(text).toContain("DDOG");
+		expect(text).toMatch(/this message only/i);
 	});
 });

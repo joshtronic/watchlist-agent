@@ -3,6 +3,7 @@ import {
 	chatErrorMessage,
 	describeToolCall,
 	renderTranscript,
+	snapshotCaption,
 } from "../../src/client/chat-view";
 import type { ChatEntry, SnapshotRow } from "../../src/client/history-store";
 
@@ -137,6 +138,40 @@ describe("renderTranscript", () => {
 			"memory-divider",
 			"user",
 		]);
+	});
+});
+
+describe("snapshotCaption", () => {
+	const asOf = "2026-10-19T19:42:10Z";
+	const clock = (isOpen: boolean) => ({
+		isOpen,
+		timestamp: asOf,
+		nextOpen: "2026-10-20T13:30:00Z",
+		nextClose: "2026-10-20T20:00:00Z",
+	});
+
+	it("explains live IEX data and points to a brokerage for real-time prices", () => {
+		const caption = snapshotCaption(asOf, clock(true));
+
+		expect(caption).toMatch(/IEX/);
+		expect(caption).toMatch(/3:42 PM ET/);
+		expect(caption).toMatch(/brokerage/i);
+		expect(caption).not.toMatch(/market closed/i);
+	});
+
+	it("says when the figures are from the last session", () => {
+		const caption = snapshotCaption(asOf, clock(false));
+
+		expect(caption).toMatch(/market closed/i);
+		expect(caption).toMatch(/last trading session/i);
+		expect(caption).toMatch(/brokerage/i);
+	});
+
+	it("still explains the source when the market status is unknown", () => {
+		const caption = snapshotCaption(asOf, null);
+
+		expect(caption).toMatch(/IEX/);
+		expect(caption).toMatch(/brokerage/i);
 	});
 });
 

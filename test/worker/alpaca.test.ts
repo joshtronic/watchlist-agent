@@ -4,6 +4,7 @@ import {
 	type AlpacaConfig,
 	alpacaConfig,
 	checkAsset,
+	getClock,
 	getSnapshots,
 	MarketDataError,
 } from "../../src/worker/alpaca";
@@ -138,6 +139,35 @@ describe("checkAsset", () => {
 		mockFetch(response);
 
 		await expectMarketDataError(checkAsset(config, "NET"), code);
+	});
+});
+
+describe("getClock", () => {
+	it("reads the market clock from the trading API with credentials", async () => {
+		const spy = mockFetch(
+			Response.json({
+				timestamp: "2026-10-19T19:42:00-04:00",
+				is_open: false,
+				next_open: "2026-10-20T09:30:00-04:00",
+				next_close: "2026-10-20T16:00:00-04:00",
+			}),
+		);
+
+		expect(await getClock(config)).toEqual({
+			isOpen: false,
+			timestamp: "2026-10-19T19:42:00-04:00",
+			nextOpen: "2026-10-20T09:30:00-04:00",
+			nextClose: "2026-10-20T16:00:00-04:00",
+		});
+		const { url, headers } = lastRequest(spy);
+		expect(url.href).toBe("https://trading.test/v2/clock");
+		expect(headers.get("APCA-API-KEY-ID")).toBe("key-id");
+	});
+
+	it.each(failures)("throws on %s", async (_label, response, code) => {
+		mockFetch(response);
+
+		await expectMarketDataError(getClock(config), code);
 	});
 });
 

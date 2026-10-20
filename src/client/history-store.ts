@@ -14,10 +14,23 @@ export interface SnapshotRow {
 	onWatchlist: boolean;
 }
 
+export interface MarketClock {
+	isOpen: boolean;
+	timestamp: string;
+	nextOpen: string;
+	nextClose: string;
+}
+
 export type ChatEntry =
 	| { kind: "user"; text: string; at: number }
 	| { kind: "assistant"; text: string; at: number }
-	| { kind: "snapshots"; asOf: string; rows: SnapshotRow[]; at: number }
+	| {
+			kind: "snapshots";
+			asOf: string;
+			market?: MarketClock | null;
+			rows: SnapshotRow[];
+			at: number;
+	  }
 	| { kind: "error"; code: string; at: number };
 
 const KEY = "watchlist:history";

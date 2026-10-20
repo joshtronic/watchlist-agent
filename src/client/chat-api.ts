@@ -1,10 +1,15 @@
-import type { SnapshotRow } from "./history-store";
+import type { MarketClock, SnapshotRow } from "./history-store";
 import { parseSse } from "./sse";
 
 export type ChatEvent =
 	| { type: "tool_call"; name: string; args: unknown }
 	| { type: "watchlist"; symbols: string[] }
-	| { type: "snapshots"; asOf: string; rows: SnapshotRow[] }
+	| {
+			type: "snapshots";
+			asOf: string;
+			market: MarketClock | null;
+			rows: SnapshotRow[];
+	  }
 	| { type: "message"; prose: string; symbols: string[] }
 	| { type: "error"; code: string }
 	| { type: "done" };

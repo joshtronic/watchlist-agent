@@ -1,5 +1,6 @@
 import {
 	type AssetCheck,
+	type MarketClock,
 	MarketDataError,
 	type MarketSnapshot,
 } from "../alpaca";
@@ -22,7 +23,12 @@ export interface SnapshotRow extends MarketSnapshot {
 export type AgentEvent =
 	| { type: "tool_call"; name: string; args: unknown }
 	| { type: "watchlist"; symbols: string[] }
-	| { type: "snapshots"; asOf: string; rows: SnapshotRow[] };
+	| {
+			type: "snapshots";
+			asOf: string;
+			market: MarketClock | null;
+			rows: SnapshotRow[];
+	  };
 
 export interface ToolOutcome {
 	result: unknown;
@@ -39,6 +45,7 @@ export interface ToolDeps {
 	removeSymbols(symbols: string[]): Promise<SymbolResult<RemoveStatus>[]>;
 	checkAsset(symbol: string): Promise<AssetCheck>;
 	getSnapshots(symbols: string[]): Promise<MarketSnapshot[]>;
+	getClock(): Promise<MarketClock>;
 	now(): Date;
 }
 

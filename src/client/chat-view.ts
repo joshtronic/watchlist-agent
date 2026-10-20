@@ -5,7 +5,7 @@ import {
 	formatPrice,
 	formatVolume,
 } from "./format";
-import type { ChatEntry, SnapshotRow } from "./history-store";
+import type { ChatEntry, MarketClock, SnapshotRow } from "./history-store";
 
 const COLUMNS: [label: string, cell: (row: SnapshotRow) => string][] = [
 	["Last price", (row) => formatPrice(row.price)],
@@ -34,6 +34,13 @@ export function renderTranscript(
 		nodes.splice(boundary, 0, divider);
 	}
 	container.replaceChildren(...nodes);
+}
+
+export function snapshotCaption(
+	_asOf: string,
+	_market: MarketClock | null | undefined,
+): string {
+	throw new Error("Not implemented");
 }
 
 export function chatErrorMessage(code: string): string {
