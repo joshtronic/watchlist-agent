@@ -34,20 +34,126 @@ export class MarketDataError extends Error {
 	}
 }
 
-export function alpacaConfig(_env: Env): AlpacaConfig {
-	throw new Error("Not implemented");
+export function alpacaConfig(env: Env): AlpacaConfig {
+	return {
+		keyId: env.ALPACA_API_KEY,
+		secretKey: env.ALPACA_SECRET_KEY,
+		dataBaseUrl: env.ALPACA_DATA_BASE_URL,
+		tradingBaseUrl: env.ALPACA_TRADING_BASE_URL,
+	};
 }
 
 export async function checkAsset(
-	_config: AlpacaConfig,
-	_symbol: string,
+	config: AlpacaConfig,
+	symbol: string,
 ): Promise<AssetCheck> {
-	throw new Error("Not implemented");
+	const url = `${config.tradingBaseUrl}/v2/assets/${encodeURIComponent(symbol)}`;
+	const response = await request(config, url, { allowNotFound: true });
+	if (response.status === 404) return { symbol, status: "invalid" };
+
+	const asset = await readJson<AlpacaAsset>(response);
+	const tradable =
+		asset.class === "us_equity" &&
+		asset.status === "active" &&
+		asset.tradable === true;
+	return { symbol, status: tradable ? "valid" : "not_tradable" };
 }
 
 export async function getSnapshots(
-	_config: AlpacaConfig,
-	_symbols: string[],
+	config: AlpacaConfig,
+	symbols: string[],
 ): Promise<MarketSnapshot[]> {
-	throw new Error("Not implemented");
+	if (symbols.length === 0) return [];
+
+	const url = new URL(`${config.dataBaseUrl}/v2/stocks/snapshots`);
+	url.searchParams.set("symbols", symbols.join(","));
+	url.searchParams.set("feed", "iex");
+
+	const response = await request(config, url.href);
+	const snapshots =
+		await readJson<Record<string, AlpacaSnapshot | null>>(response);
+	return symbols.map((symbol) => toMarketSnapshot(symbol, snapshots[symbol]));
+}
+
+interface AlpacaAsset {
+	class?: string;
+	status?: string;
+	tradable?: boolean;
+}
+
+interface AlpacaSnapshot {
+	latestTrade?: { p?: number; t?: string };
+	latestQuote?: { bp?: number; ap?: number };
+	dailyBar?: { o?: number; h?: number; l?: number; v?: number };
+	prevDailyBar?: { c?: number };
+}
+
+function toMarketSnapshot(
+	symbol: string,
+	snapshot: AlpacaSnapshot | null | undefined,
+): MarketSnapshot {
+	const price = snapshot?.latestTrade?.p ?? null;
+	const prevClose = snapshot?.prevDailyBar?.c ?? null;
+	const change =
+		price !== null && prevClose !== null ? price - prevClose : null;
+
+	return {
+		symbol,
+		price,
+		tradeTime: snapshot?.latestTrade?.t ?? null,
+		prevClose,
+		change,
+		changePct: change !== null && prevClose ? (change / prevClose) * 100 : null,
+		dayOpen: snapshot?.dailyBar?.o ?? null,
+		dayHigh: snapshot?.dailyBar?.h ?? null,
+		dayLow: snapshot?.dailyBar?.l ?? null,
+		dayVolume: snapshot?.dailyBar?.v ?? null,
+		// IEX reports an empty side of the book as 0.
+		bid: positiveOrNull(snapshot?.latestQuote?.bp),
+		ask: positiveOrNull(snapshot?.latestQuote?.ap),
+	};
+}
+
+function positiveOrNull(value: number | undefined): number | null {
+	return value !== undefined && value > 0 ? value : null;
+}
+
+async function request(
+	config: AlpacaConfig,
+	url: string,
+	{ allowNotFound = false } = {},
+): Promise<Response> {
+	let response: Response;
+	try {
+		response = await fetch(url, {
+			headers: {
+				"APCA-API-KEY-ID": config.keyId,
+				"APCA-API-SECRET-KEY": config.secretKey,
+			},
+		});
+	} catch (error) {
+		throw new MarketDataError(
+			"market_data_error",
+			`Alpaca unreachable: ${error}`,
+		);
+	}
+
+	if (response.status === 429) {
+		throw new MarketDataError("market_data_rate_limited", "Alpaca rate limit");
+	}
+	if (response.ok || (allowNotFound && response.status === 404)) {
+		return response;
+	}
+	throw new MarketDataError(
+		"market_data_error",
+		`Alpaca responded ${response.status}`,
+	);
+}
+
+async function readJson<T>(response: Response): Promise<T> {
+	try {
+		return (await response.json()) as T;
+	} catch {
+		throw new MarketDataError("market_data_error", "Alpaca sent invalid JSON");
+	}
 }
