@@ -1,5 +1,11 @@
-import type { AiClient } from "./ai-client";
-import type { AgentEvent, Toolbox } from "./tools";
+import { normalizeSymbol } from "../watchlist";
+import {
+	type AiClient,
+	AiError,
+	type ChatMessage,
+	type ToolCall,
+} from "./ai-client";
+import { type AgentEvent, TOOL_DEFINITIONS, type Toolbox } from "./tools";
 
 export const MAX_ITERATIONS = 5;
 
@@ -23,10 +29,116 @@ export type TurnResult =
 	| { ok: true; prose: string; symbols: string[]; offer: string[] }
 	| { ok: false; error: "loop_limit" | "ai_error" | "ai_quota_exhausted" };
 
-export function buildSystemPrompt(_pendingOffer: string[]): string {
-	throw new Error("Not implemented");
+export function buildSystemPrompt(pendingOffer: string[]): string {
+	const lines = [
+		"You are Watchlist Agent, a friendly assistant that helps people keep an eye on a small watchlist of US stocks and ETFs. Many users are not traders, so use plain words and explain any term you use.",
+		"",
+		"Rules:",
+		"- Never give financial advice: no recommendations, price targets, predictions, or buy, sell or hold opinions. Politely decline and offer factual data instead.",
+		'- Never state prices or percentages, and never write any digits at all. The app shows the numbers from your tool results as tables; refer to them instead (for example "see the table above").',
+		"- Use the tools to read or change the watchlist and to fetch market data. Never guess data.",
+		"- Market data comes from the IEX feed only. Its volume is a fraction of the whole market, so say so when volume comes up. Use the timestamps: outside market hours the data is the last trade, so do not describe it as today's move.",
+		"- If the user asks about a symbol that is not on their watchlist, answer the question, then ask whether they would like to add it. If the watchlist is full, ask whether they would like to swap a symbol out. Never add it until they accept.",
+		"- Always finish by calling the respond tool exactly once, with your answer as prose and the symbols your answer is about.",
+	];
+	if (pendingOffer.length > 0) {
+		lines.push(
+			"",
+			`Pending offer: in your last message you offered to add ${pendingOffer.join(", ")}. This offer is valid for this message only: add them only if this message clearly accepts it. Any other earlier offer has expired and must not be acted on.`,
+		);
+	}
+	return lines.join("\n");
 }
 
-export async function runAgentTurn(_input: TurnInput): Promise<TurnResult> {
-	throw new Error("Not implemented");
+const NO_DIGITS_REMINDER =
+	"Your answer contained digits. Rewrite it without any digits, prices or percentages; the user already sees the numbers in the table. Then call respond again.";
+const RESPOND_REMINDER =
+	"Finish by calling the respond tool with your answer as prose and the symbols it is about.";
+
+export async function runAgentTurn(input: TurnInput): Promise<TurnResult> {
+	const messages: ChatMessage[] = [
+		{ role: "system", content: buildSystemPrompt(input.pendingOffer) },
+		...input.history.map((entry) => ({
+			role: entry.role,
+			content: entry.text,
+		})),
+		{ role: "user", content: input.message },
+	];
+
+	for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+		let reply: Awaited<ReturnType<AiClient>>;
+		try {
+			reply = await input.ai(messages, TOOL_DEFINITIONS);
+		} catch (error) {
+			if (error instanceof AiError) return { ok: false, error: error.code };
+			throw error;
+		}
+
+		const toolCalls = reply.toolCalls.filter((c) => c.name !== "respond");
+		if (toolCalls.length > 0) {
+			// Any respond in the same reply was written before seeing these
+			// results, so it is ignored and the model is asked again.
+			for (const call of toolCalls) {
+				messages.push(await runTool(input, call));
+			}
+			continue;
+		}
+
+		const answer = readAnswer(reply);
+		if (!answer) {
+			messages.push({ role: "user", content: RESPOND_REMINDER });
+			continue;
+		}
+		if (/\d/.test(answer.prose)) {
+			messages.push(
+				{ role: "assistant", content: answer.prose },
+				{ role: "user", content: NO_DIGITS_REMINDER },
+			);
+			continue;
+		}
+
+		const watchlist = await input.getWatchlist();
+		return {
+			ok: true,
+			prose: answer.prose,
+			symbols: answer.symbols,
+			offer: answer.symbols.filter((symbol) => !watchlist.includes(symbol)),
+		};
+	}
+
+	return { ok: false, error: "loop_limit" };
+}
+
+async function runTool(input: TurnInput, call: ToolCall): Promise<ChatMessage> {
+	input.emit({ type: "tool_call", name: call.name, args: call.arguments });
+	const outcome = await input.toolbox.execute(call);
+	for (const event of outcome.events) input.emit(event);
+	return {
+		role: "tool",
+		name: call.name,
+		content: JSON.stringify(outcome.result),
+	};
+}
+
+function readAnswer(
+	reply: Awaited<ReturnType<AiClient>>,
+): { prose: string; symbols: string[] } | null {
+	const respond = reply.toolCalls.find((c) => c.name === "respond");
+	if (!respond) {
+		return reply.text ? { prose: reply.text.trim(), symbols: [] } : null;
+	}
+
+	const { prose, symbols } = (respond.arguments ?? {}) as {
+		prose?: unknown;
+		symbols?: unknown;
+	};
+	if (typeof prose !== "string" || !prose.trim()) return null;
+	return {
+		prose: prose.trim(),
+		symbols: Array.isArray(symbols)
+			? symbols
+					.filter((s): s is string => typeof s === "string")
+					.map((s) => normalizeSymbol(s) ?? s.trim().toUpperCase())
+			: [],
+	};
 }

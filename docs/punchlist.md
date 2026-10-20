@@ -41,7 +41,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
       `wrangler dev`.
 - [x] **npm scripts:** `dev`, `build`, `test`, `test:live` (empty suite for now), `lint`,
       `format`, `typecheck`, `deploy`.
-- [ ] **`wrangler.jsonc`:**
+- [x] **`wrangler.jsonc`:**
   - static assets, `AI` binding, `SESSION` DO binding with the `new_sqlite_classes` migration;
   - custom domain route `watchlist.fetchlogic.com`, `workers_dev: false`;
   - `TURNSTILE_SITE_KEY` var.
@@ -100,13 +100,13 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 4 — Agent loop (fake AI binding)
 
-- [ ] Tool schemas + argument validation (errors go back to the model).
-- [ ] Tools: `list_watchlist`, `add_symbols`, `remove_symbols`, `get_snapshots` (including
+- [x] Tool schemas + argument validation (errors go back to the model).
+- [x] Tools: `list_watchlist`, `add_symbols`, `remove_symbols`, `get_snapshots` (including
       off-list symbols), `respond`.
-- [ ] Loop: 5-iteration cap, plain-text fallback, and the digit check → reprompt.
-- [ ] Pending add offer (set from `respond.symbols`, valid for the next turn only).
-- [ ] History: last 10 exchanges, prose only.
-- [ ] AI error mapping (`ai_quota_exhausted`, `ai_error`, `loop_limit`).
+- [x] Loop: 5-iteration cap, plain-text fallback, and the digit check → reprompt.
+- [x] Pending add offer (set from `respond.symbols`, valid for the next turn only).
+- [x] History: last 10 exchanges, prose only.
+- [x] AI error mapping (`ai_quota_exhausted`, `ai_error`, `loop_limit`).
 
 ## Phase 5 — Chat
 

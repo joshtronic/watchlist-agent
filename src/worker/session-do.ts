@@ -13,6 +13,10 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const INACTIVITY_WIPE_MS = 365 * DAY_MS;
 const SESSION_KEY = "session";
 const WATCHLIST_KEY = "watchlist";
+const HISTORY_KEY = "history";
+const PENDING_OFFER_KEY = "pendingOffer";
+// The last ten exchanges, as user and assistant messages.
+const HISTORY_LIMIT = 20;
 
 export interface TurnRecord {
 	user: string;
@@ -115,15 +119,24 @@ export class SessionDO extends DurableObject<Env> {
 	}
 
 	async getHistory(): Promise<HistoryMessage[]> {
-		throw new Error("Not implemented");
+		return (await this.ctx.storage.get<HistoryMessage[]>(HISTORY_KEY)) ?? [];
 	}
 
 	async getPendingOffer(): Promise<string[]> {
-		throw new Error("Not implemented");
+		return (await this.ctx.storage.get<string[]>(PENDING_OFFER_KEY)) ?? [];
 	}
 
-	async recordTurn(_turn: TurnRecord): Promise<void> {
-		throw new Error("Not implemented");
+	async recordTurn({ user, assistant, at, offer }: TurnRecord): Promise<void> {
+		const history = [
+			...(await this.getHistory()),
+			{ role: "user" as const, text: user, at },
+			{ role: "assistant" as const, text: assistant, at },
+		].slice(-HISTORY_LIMIT);
+
+		await this.ctx.storage.put({
+			[HISTORY_KEY]: history,
+			[PENDING_OFFER_KEY]: offer,
+		});
 	}
 
 	override async alarm(): Promise<void> {
