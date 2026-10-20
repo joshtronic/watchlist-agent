@@ -203,6 +203,12 @@ export class SessionDO extends DurableObject<Env> {
 		});
 	}
 
+	async allowRequest(
+		_now: number,
+	): Promise<{ ok: true } | { ok: false; retryAfter: number }> {
+		throw new Error("Not implemented");
+	}
+
 	override async alarm(): Promise<void> {
 		await this.ctx.storage.deleteAll();
 	}

@@ -61,6 +61,21 @@ describe("POST /api/chat", () => {
 		expect(await res.json()).toEqual({ error: "bad_request" });
 	});
 
+	it("refuses an eleventh message in a minute", async () => {
+		const id = await existingSession();
+		for (let i = 0; i < 10; i++) {
+			await sessionStub(id).allowRequest(Date.now());
+		}
+
+		const res = await postChat({ message: "hi" }, `wl_session=${id}`);
+
+		expect(res.status).toBe(429);
+		const body = await res.json<{ error: string; retryAfter: number }>();
+		expect(body.error).toBe("rate_limited");
+		expect(body.retryAfter).toBeGreaterThan(0);
+		expect(res.headers.get("retry-after")).toBe(String(body.retryAfter));
+	});
+
 	it("streams the turn and remembers it", async () => {
 		const id = await existingSession();
 		const fakeAi: AiClient = vi.fn(async () => ({
