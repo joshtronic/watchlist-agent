@@ -6,6 +6,7 @@ import {
 	checkAsset,
 	getClock,
 	getDailyBars,
+	getNews,
 	getSnapshots,
 	MarketDataError,
 } from "../../src/worker/alpaca";
@@ -269,6 +270,66 @@ describe("getDailyBars", () => {
 		mockFetch(response);
 
 		await expectMarketDataError(getDailyBars(config, ["AMD"], "a", "b"), code);
+	});
+});
+
+describe("getNews", () => {
+	const article = {
+		id: 101,
+		headline: "Why Is AMD Stock Surging on Monday?",
+		summary: "Shares rose after a chip rally.",
+		author: "Benzinga Newsdesk",
+		source: "benzinga",
+		url: "https://www.benzinga.com/news/amd",
+		symbols: ["AMD", "QQQ"],
+		created_at: "2026-10-19T16:31:00Z",
+		updated_at: "2026-10-19T16:40:00Z",
+		images: [],
+		content: "",
+	};
+
+	it("asks for the latest headlines for the symbols, newest first", async () => {
+		const spy = mockFetch(Response.json({ news: [], next_page_token: null }));
+
+		await getNews(config, ["AMD", "NET"], 5);
+
+		const { url, headers } = lastRequest(spy);
+		expect(url.origin + url.pathname).toBe("https://data.test/v1beta1/news");
+		expect(Object.fromEntries(url.searchParams)).toMatchObject({
+			symbols: "AMD,NET",
+			limit: "5",
+			sort: "desc",
+		});
+		expect(headers.get("APCA-API-KEY-ID")).toBe("key-id");
+	});
+
+	it("maps articles to the fields the app uses", async () => {
+		mockFetch(Response.json({ news: [article], next_page_token: null }));
+
+		expect(await getNews(config, ["AMD"], 5)).toEqual([
+			{
+				id: 101,
+				headline: "Why Is AMD Stock Surging on Monday?",
+				summary: "Shares rose after a chip rally.",
+				source: "benzinga",
+				url: "https://www.benzinga.com/news/amd",
+				symbols: ["AMD", "QQQ"],
+				createdAt: "2026-10-19T16:31:00Z",
+			},
+		]);
+	});
+
+	it("makes no request for an empty list", async () => {
+		const spy = mockFetch(Response.json({ news: [] }));
+
+		expect(await getNews(config, [], 5)).toEqual([]);
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it.each(failures)("throws on %s", async (_label, response, code) => {
+		mockFetch(response);
+
+		await expectMarketDataError(getNews(config, ["AMD"], 5), code);
 	});
 });
 

@@ -58,6 +58,68 @@ describe("encodeEvent", () => {
 });
 
 describe("streamChatTurn", () => {
+	it("sends news labels before the answer", async () => {
+		const d = deps([], {
+			ai: vi.fn(async () => respond("Upbeat.", ["AMD"])),
+		});
+		const labelled = {
+			...d,
+			ai: vi
+				.fn()
+				.mockResolvedValueOnce({
+					text: null,
+					toolCalls: [{ name: "get_news", arguments: {} }],
+				})
+				.mockResolvedValueOnce({
+					text: null,
+					toolCalls: [
+						{
+							name: "respond",
+							arguments: {
+								prose: "Upbeat.",
+								symbols: ["AMD"],
+								newsLabels: [{ id: 7, sentiment: "positive", kind: "news" }],
+							},
+						},
+					],
+				}),
+			toolbox: {
+				execute: vi.fn(async () => ({
+					result: {},
+					events: [
+						{
+							type: "news" as const,
+							articles: [
+								{
+									id: 7,
+									headline: "AMD rallies",
+									summary: "",
+									source: "benzinga",
+									url: "https://example.com/7",
+									symbols: ["AMD"],
+									createdAt: "2026-10-19T16:31:00Z",
+								},
+							],
+						},
+					],
+				})),
+			},
+		};
+
+		const events = await readEvents(streamChatTurn(labelled));
+
+		expect(events.map((e) => e.event)).toEqual([
+			"tool_call",
+			"news",
+			"news_labels",
+			"message",
+			"done",
+		]);
+		expect(events[2]?.data).toEqual({
+			labels: [{ id: 7, sentiment: "positive", kind: "news" }],
+		});
+	});
+
 	it("streams tool activity, the answer, then done", async () => {
 		const d = deps([
 			{ text: null, toolCalls: [{ name: "list_watchlist", arguments: {} }] },

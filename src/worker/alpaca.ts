@@ -41,6 +41,16 @@ export interface DailyBar {
 	volume: number;
 }
 
+export interface NewsArticle {
+	id: number;
+	headline: string;
+	summary: string;
+	source: string;
+	url: string;
+	symbols: string[];
+	createdAt: string;
+}
+
 export class MarketDataError extends Error {
 	readonly code: "market_data_error" | "market_data_rate_limited";
 
@@ -148,6 +158,14 @@ function toDailyBar(bar: AlpacaBar): DailyBar {
 		close: bar.c,
 		volume: bar.v,
 	};
+}
+
+export async function getNews(
+	_config: AlpacaConfig,
+	_symbols: string[],
+	_limit: number,
+): Promise<NewsArticle[]> {
+	throw new Error("Not implemented");
 }
 
 export async function getSnapshots(

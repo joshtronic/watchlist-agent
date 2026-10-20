@@ -4,6 +4,7 @@ import {
 	type MarketClock,
 	MarketDataError,
 	type MarketSnapshot,
+	type NewsArticle,
 } from "../alpaca";
 import {
 	type AddStatus,
@@ -37,9 +38,25 @@ export interface HistoryRow {
 	low: number | null;
 }
 
+export const NEWS_SENTIMENTS = ["positive", "negative", "neutral"] as const;
+export const NEWS_KINDS = [
+	"news",
+	"analysis",
+	"analyst_rating",
+	"opinion",
+	"press_release",
+] as const;
+
+export interface NewsLabel {
+	id: number;
+	sentiment: (typeof NEWS_SENTIMENTS)[number];
+	kind: (typeof NEWS_KINDS)[number];
+}
+
 export type AgentEvent =
 	| { type: "tool_call"; name: string; args: unknown }
 	| { type: "watchlist"; symbols: string[] }
+	| { type: "news"; articles: NewsArticle[] }
 	| { type: "history"; period: HistoryPeriod; from: string; rows: HistoryRow[] }
 	| {
 			type: "snapshots";
@@ -64,6 +81,7 @@ export interface ToolDeps {
 	checkAsset(symbol: string): Promise<AssetCheck>;
 	getSnapshots(symbols: string[]): Promise<MarketSnapshot[]>;
 	getClock(): Promise<MarketClock>;
+	getNews(symbols: string[], limit: number): Promise<NewsArticle[]>;
 	getDailyBars(
 		symbols: string[],
 		start: string,

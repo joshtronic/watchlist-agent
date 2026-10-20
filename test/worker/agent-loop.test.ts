@@ -99,6 +99,7 @@ describe("runAgentTurn", () => {
 			prose: "Your list is mostly up today.",
 			symbols: ["NET"],
 			offer: [],
+			newsLabels: [],
 		});
 		expect(execute).not.toHaveBeenCalled();
 	});
@@ -189,6 +190,7 @@ describe("runAgentTurn", () => {
 			prose: "Hi! Ask me anything.",
 			symbols: [],
 			offer: [],
+			newsLabels: [],
 		});
 	});
 
@@ -266,6 +268,91 @@ describe("runAgentTurn", () => {
 		},
 	);
 
+	describe("news labels", () => {
+		const newsReply = call("get_news", { symbols: ["AMD"] });
+		const withNews = () => ({
+			toolbox: {
+				execute: vi.fn(
+					async (): Promise<ToolOutcome> => ({
+						result: {},
+						events: [
+							{
+								type: "news" as const,
+								articles: [
+									{
+										id: 7,
+										headline: "AMD rallies",
+										summary: "",
+										source: "benzinga",
+										url: "https://example.com/7",
+										symbols: ["AMD"],
+										createdAt: "2026-10-19T16:31:00Z",
+									},
+								],
+							},
+						],
+					}),
+				),
+			},
+		});
+		const respondWithLabels = (labels: unknown): AiReply => ({
+			text: null,
+			toolCalls: [
+				{
+					name: "respond",
+					arguments: {
+						prose: "The news looks upbeat.",
+						symbols: ["AMD"],
+						newsLabels: labels,
+					},
+				},
+			],
+		});
+
+		it("returns the model's labels for articles fetched this turn", async () => {
+			const { input } = setup(
+				[
+					newsReply,
+					respondWithLabels([{ id: 7, sentiment: "positive", kind: "news" }]),
+				],
+				withNews(),
+			);
+
+			expect(await runAgentTurn(input)).toMatchObject({
+				ok: true,
+				newsLabels: [{ id: 7, sentiment: "positive", kind: "news" }],
+			});
+		});
+
+		it("drops labels for unknown articles or with invalid values", async () => {
+			const { input } = setup(
+				[
+					newsReply,
+					respondWithLabels([
+						{ id: 99, sentiment: "positive", kind: "news" },
+						{ id: 7, sentiment: "ecstatic", kind: "news" },
+						{ id: 7, sentiment: "negative", kind: "gossip" },
+						"nonsense",
+					]),
+				],
+				withNews(),
+			);
+
+			expect(await runAgentTurn(input)).toMatchObject({
+				ok: true,
+				newsLabels: [],
+			});
+		});
+
+		it("ignores labels when no news was fetched", async () => {
+			const { input } = setup([
+				respondWithLabels([{ id: 7, sentiment: "positive", kind: "news" }]),
+			]);
+
+			expect(await runAgentTurn(input)).toMatchObject({ newsLabels: [] });
+		});
+	});
+
 	it("offers to add answered-about symbols that are not on the watchlist", async () => {
 		const { input } = setup([
 			respond("SNOW is having a good day. Want me to add it?", ["NET", "SNOW"]),
@@ -338,6 +425,14 @@ describe("buildSystemPrompt", () => {
 
 	it("tells the model it can answer questions about a period", () => {
 		expect(prompt()).toMatch(/price history/i);
+	});
+
+	it("explains news and how to label it without repeating ratings", () => {
+		const text = prompt();
+
+		expect(text).toMatch(/news/i);
+		expect(text).toMatch(/positive, negative or neutral/i);
+		expect(text).toMatch(/never repeat analyst ratings or price targets/i);
 	});
 
 	it("warns against calling a closed session today's move", () => {

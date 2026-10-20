@@ -5,7 +5,12 @@ import {
 	type ChatMessage,
 	type ToolCall,
 } from "./ai-client";
-import { type AgentEvent, TOOL_DEFINITIONS, type Toolbox } from "./tools";
+import {
+	type AgentEvent,
+	type NewsLabel,
+	TOOL_DEFINITIONS,
+	type Toolbox,
+} from "./tools";
 
 export const MAX_ITERATIONS = 5;
 
@@ -26,7 +31,13 @@ export interface TurnInput {
 }
 
 export type TurnResult =
-	| { ok: true; prose: string; symbols: string[]; offer: string[] }
+	| {
+			ok: true;
+			prose: string;
+			symbols: string[];
+			offer: string[];
+			newsLabels: NewsLabel[];
+	  }
 	| { ok: false; error: "loop_limit" | "ai_error" | "ai_quota_exhausted" };
 
 export interface PromptContext {
