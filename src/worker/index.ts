@@ -1,5 +1,6 @@
 import { postChat } from "./chat-routes";
 import { createSession, deleteSession, getSession } from "./session-routes";
+import { postTranscribe } from "./transcribe-routes";
 import { applyStarter } from "./watchlist-routes";
 
 export { SessionDO } from "./session-do";
@@ -25,6 +26,8 @@ export default {
 				return deleteSession(request, env);
 			case "POST /api/chat":
 				return postChat(request, env);
+			case "POST /api/transcribe":
+				return postTranscribe(request, env);
 			case "POST /api/watchlist/starter":
 				return applyStarter(request, env);
 			default:

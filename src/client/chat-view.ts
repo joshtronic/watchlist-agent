@@ -109,6 +109,12 @@ export function chatErrorMessage(code: string): string {
 			return "Couldn't reach the server. Check your connection and retry.";
 		case "no_session":
 			return "Your session has ended. Refresh the page to start again.";
+		case "transcription_failed":
+			return "Couldn't make that out. Try again, or type your question.";
+		case "mic_unavailable":
+			return "The microphone isn't available. Check your browser's permission, or type your question.";
+		case "audio_too_large":
+			return "That recording was too long. Keep it under thirty seconds.";
 		default:
 			return "Something went wrong. Please try again.";
 	}

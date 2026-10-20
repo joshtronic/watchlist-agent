@@ -156,9 +156,11 @@ function showApp(watchlist: string[]) {
 						disabled
 					/>
 					<button
+						id="composer-mic"
 						class="button button-icon button-quiet"
 						type="button"
 						aria-label="Speak your question"
+						aria-pressed="false"
 						disabled
 					>
 						${micIcon}

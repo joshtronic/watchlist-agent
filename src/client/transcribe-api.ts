@@ -3,7 +3,25 @@ export type TranscribeResult =
 	| { ok: false; error: string };
 
 export async function transcribeAudio(
-	_wav: ArrayBuffer,
+	wav: ArrayBuffer,
 ): Promise<TranscribeResult> {
-	throw new Error("Not implemented");
+	try {
+		const res = await fetch("/api/transcribe", {
+			method: "POST",
+			headers: { "content-type": "audio/wav" },
+			body: wav,
+		});
+		const body: { text?: unknown; error?: unknown } = await res
+			.json()
+			.catch(() => ({}));
+		if (res.ok && typeof body.text === "string") {
+			return { ok: true, text: body.text };
+		}
+		return {
+			ok: false,
+			error: typeof body.error === "string" ? body.error : "unknown",
+		};
+	} catch {
+		return { ok: false, error: "network" };
+	}
 }

@@ -132,9 +132,9 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 7 — Voice
 
-- [ ] WAV encoder (decode → mono → 16 kHz → 16-bit PCM).
-- [ ] `POST /api/transcribe` → Whisper with the ticker `initial_prompt`.
-- [ ] Mic UI: 30 s cap, permission-denied handling, transcript fills the input (no auto-send).
+- [x] WAV encoder (decode → mono → 16 kHz → 16-bit PCM).
+- [x] `POST /api/transcribe` → Whisper with the ticker `initial_prompt`.
+- [x] Mic UI: 30 s cap, permission-denied handling, transcript fills the input (no auto-send).
 
 ## Phase 8 — Live suite (`npm run test:live`)
 

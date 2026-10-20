@@ -1,5 +1,9 @@
 import { sendChat } from "./chat-api";
-import { describeToolCall, renderTranscript } from "./chat-view";
+import {
+	chatErrorMessage,
+	describeToolCall,
+	renderTranscript,
+} from "./chat-view";
 import {
 	appendEntries,
 	type ChatEntry,
@@ -7,6 +11,8 @@ import {
 	memoryBoundary,
 	saveHistory,
 } from "./history-store";
+import { micSupported, type Recording, startRecording } from "./recorder";
+import { transcribeAudio } from "./transcribe-api";
 
 export interface ChatPanelOptions {
 	conversation: HTMLElement;
@@ -37,6 +43,10 @@ export function mountChatPanel({
 	const progress = find(conversation, "#chat-progress");
 	const input = find<HTMLInputElement>(form, "input");
 	const submit = find<HTMLButtonElement>(form, 'button[type="submit"]');
+	const mic = find<HTMLButtonElement>(form, "#composer-mic");
+	const canRecord = micSupported();
+	let recording: Recording | null = null;
+	let transcribing = false;
 
 	const render = () => {
 		empty.hidden = entries.length > 0;
@@ -51,12 +61,71 @@ export function mountChatPanel({
 	const setBusy = (busy: boolean) => {
 		input.disabled = busy;
 		submit.disabled = busy;
+		mic.disabled = busy || !canRecord;
 		progress.hidden = !busy;
 		if (busy) progress.textContent = "Thinking…";
 	};
+	const showStatus = (text: string | null) => {
+		progress.hidden = text === null;
+		progress.textContent = text ?? "";
+	};
+	const setRecording = (active: boolean) => {
+		mic.setAttribute("aria-pressed", String(active));
+		mic.setAttribute(
+			"aria-label",
+			active ? "Stop recording" : "Speak your question",
+		);
+		mic.classList.toggle("button-recording", active);
+	};
+
+	const stopAndTranscribe = async () => {
+		if (!recording) return;
+		const current = recording;
+		recording = null;
+		setRecording(false);
+		transcribing = true;
+		mic.disabled = true;
+		showStatus("Transcribing…");
+		try {
+			const result = await transcribeAudio(await current.stop());
+			if (result.ok) {
+				// Fill the box for review; the user sends it themselves.
+				input.value = result.text;
+				showStatus(null);
+				input.focus();
+			} else {
+				showStatus(chatErrorMessage(result.error));
+			}
+		} catch {
+			showStatus(chatErrorMessage("transcription_failed"));
+		} finally {
+			transcribing = false;
+			mic.disabled = input.disabled || !canRecord;
+		}
+	};
+
+	mic.addEventListener("click", async () => {
+		if (transcribing) return;
+		if (recording) {
+			await stopAndTranscribe();
+			return;
+		}
+		try {
+			recording = await startRecording(stopAndTranscribe);
+			setRecording(true);
+			showStatus(
+				"Listening… click the microphone again to stop (up to thirty seconds).",
+			);
+		} catch {
+			recording = null;
+			showStatus(chatErrorMessage("mic_unavailable"));
+		}
+	});
 
 	input.disabled = false;
 	submit.disabled = false;
+	mic.disabled = !canRecord;
+	if (!canRecord) mic.title = "Voice input isn't supported in this browser.";
 	render();
 
 	form.addEventListener("submit", async (event) => {

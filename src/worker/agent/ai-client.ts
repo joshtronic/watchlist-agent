@@ -105,7 +105,7 @@ function parseArguments(value: unknown): unknown {
 }
 
 // Workers AI reports the free tier's daily limit as error 4006.
-function toAiError(error: unknown): AiError {
+export function toAiError(error: unknown): AiError {
 	const message = error instanceof Error ? error.message : String(error);
 	const quota = /\b4006\b|daily free allocation|neurons/i.test(message);
 	return new AiError(quota ? "ai_quota_exhausted" : "ai_error", message);
