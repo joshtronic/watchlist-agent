@@ -139,13 +139,24 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 ## Phase 8 — Live suite (`npm run test:live`)
 
 - [x] Alpaca contract checks + every starter symbol active and tradable: covered by `npm run check:alpaca` (a manual script, not a test suite; the rest of Phase 8 follows the same pattern).
-- [ ] Whisper fixtures (including a real Firefox ogg recording) → expected tickers.
-- [ ] Llama tool-selection cases, digit-check rates, and the pending-offer cases.
+- [x] Whisper check: `npm run check:voice` (MeloTTS speech → the app's Whisper call). A real Firefox recording is still worth trying by hand.
+- [x] Llama tool selection, boundaries, news labels and the pending-offer cases: `npm run check:agent`.
+
+## Tuning (saved for the end, per Josh)
+
+- [ ] The model still says "see the table above" with no table fetched (advice declines, news
+      answers). `check:agent` flags it.
+- [ ] The first answer is bland ("Here is the latest snapshot…").
+- [ ] "Last week" maps to a trailing seven days; consider a previous-calendar-week period.
+- [ ] News labelling: "Reiterates Outperform" came back as `analysis`, not `analyst_rating`.
+- [ ] Digits in proper names (e.g. "x86") trigger the reprompt and cost extra model calls.
+- [ ] Whisper with MeloTTS heard "Nvidia" as "Vendia" and "AMD" as "Anne"; test with real
+      voices.
 
 ## Phase 9 — Polish
 
 - [x] UI design pass: done early as the Warm Consumer App world (light and dark), recorded in `DESIGN.md`.
-- [ ] README: setup, scripts and deploy.
+- [x] README: setup, scripts and deploy.
 
 ## Later (after the initial build)
 

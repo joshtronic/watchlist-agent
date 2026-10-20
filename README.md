@@ -28,6 +28,9 @@ from 2026-10-19, after market close.</sub>
   and an offer to add it, valid for your next message only)
 - "Yes please." (accepts that offer)
 - "Which of my stocks are down today?"
+- "How did AMD do over the past month?" (price history)
+- "Any news on Cloudflare?" (headlines, labelled positive, negative or neutral)
+- The microphone button: speak a question, check the transcript, then send it
 - "Should I buy NVDA?" (it will politely decline)
 
 New sessions can start with **QQQ's top 10** holdings in one click. The
@@ -42,9 +45,9 @@ one out.
     the watchlist, the last 10 exchanges of conversation (as context for the
     model) and any pending "add this?" offer. Chat turns run inside it one at a
     time.
-  - **Agent loop:** Llama 3.3 70B on Workers AI with five tools:
-    `list_watchlist`, `add_symbols`, `remove_symbols`, `get_snapshots` and
-    `respond`. A turn is capped at 5 model calls. The answer streams to the
+  - **Agent loop:** Llama 3.3 70B on Workers AI with seven tools:
+    `list_watchlist`, `add_symbols`, `remove_symbols`, `get_snapshots`,
+    `get_price_history`, `get_news` and `respond`. A turn is capped at 5 model calls. The answer streams to the
     browser as server-sent events.
 - **Market data:** Alpaca's free tier. Snapshots come from the **IEX feed
   only**, so volume is a fraction of the whole market, and outside market hours
@@ -84,20 +87,23 @@ allocation. A typical question uses two or three model calls.
 
 ## Scripts
 
-| Script                 | What it does                                                                   |
-|------------------------|--------------------------------------------------------------------------------|
-| `npm run dev`          | Vite dev server running the Worker, Durable Object and frontend                |
-| `npm test`             | All tests, offline (Workers runtime for the server, happy-dom for UI)          |
-| `npm run typecheck`    | TypeScript project build check                                                 |
-| `npm run lint`         | Biome lint and format check (`npm run format` fixes)                           |
-| `npm run types`        | Regenerate `worker-configuration.d.ts` after changing `wrangler.jsonc`         |
-| `npm run check:alpaca` | Manual check against the real Alpaca API using `.dev.vars` (never prints keys) |
-| `npm run build`        | Production build                                                               |
-| `npm run deploy`       | Build and deploy, stamping the current commit                                  |
+| Script                 | What it does                                                                     |
+|------------------------|----------------------------------------------------------------------------------|
+| `npm run dev`          | Vite dev server running the Worker, Durable Object and frontend                  |
+| `npm test`             | All tests, offline (Workers runtime for the server, happy-dom for UI)            |
+| `npm run typecheck`    | TypeScript project build check                                                   |
+| `npm run lint`         | Biome lint and format check (`npm run format` fixes)                             |
+| `npm run types`        | Regenerate `worker-configuration.d.ts` after changing `wrangler.jsonc`           |
+| `npm run check:alpaca` | Manual check against the real Alpaca API using `.dev.vars` (never prints keys)   |
+| `npm run check:agent`  | Manual agent behaviour checks against the real model and Alpaca (spends neurons) |
+| `npm run check:voice`  | Manual transcription check: MeloTTS speech through the app's Whisper call        |
+| `npm run build`        | Production build                                                                 |
+| `npm run deploy`       | Build and deploy, stamping the current commit                                    |
 
 Tests never touch the network or real secrets. Fake secrets are injected, and AI
-and Alpaca are faked. Checks against real services are manual scripts, like
-`check:alpaca`.
+and Alpaca are faked. Checks against real services are the manual `check:*`
+scripts. The model's output varies, so a failing `check:agent` case is a reason
+to look, not proof of a bug.
 
 ## Deploying
 
@@ -121,11 +127,11 @@ Done:
 - The Alpaca client
 - The agent loop
 - Streaming chat
+- Price history and news
+- The per-session rate limit
+- Voice input
 - The design system, with light and dark themes
 
 Still to do:
 
-- The per-session rate limit
-- Voice input (Whisper)
-- More manual checks against real services
-- Tuning the assistant's replies
+- Tuning the assistant's replies (see the punchlist)
