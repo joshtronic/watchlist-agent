@@ -4,6 +4,7 @@ import {
 	type ChatEntry,
 	loadHistory,
 	memoryBoundary,
+	saveHistory,
 } from "../../src/client/history-store";
 
 const user = (text: string, at = 1): ChatEntry => ({ kind: "user", text, at });
@@ -42,6 +43,19 @@ describe("history store", () => {
 		const history = loadHistory(localStorage);
 		expect(history).toHaveLength(200);
 		expect(history[0]).toEqual(user("m5", 5));
+	});
+
+	it("can replace the whole history, keeping the cap", () => {
+		appendEntries(localStorage, [user("old")]);
+
+		saveHistory(
+			localStorage,
+			Array.from({ length: 205 }, (_, i) => user(`n${i}`, i)),
+		);
+
+		const history = loadHistory(localStorage);
+		expect(history).toHaveLength(200);
+		expect(history[0]).toEqual(user("n5", 5));
 	});
 
 	it("treats corrupt data as empty", () => {

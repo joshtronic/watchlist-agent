@@ -5,6 +5,7 @@ import {
 	type ChatEntry,
 	loadHistory,
 	memoryBoundary,
+	saveHistory,
 } from "./history-store";
 
 export interface ChatPanelOptions {
@@ -65,6 +66,7 @@ export function mountChatPanel({
 
 		input.value = "";
 		add({ kind: "user", text: message, at: Date.now() });
+		const turnStart = entries.length;
 		setBusy(true);
 
 		await sendChat(message, (chatEvent) => {
@@ -86,6 +88,22 @@ export function mountChatPanel({
 						rows: chatEvent.rows,
 						at: Date.now(),
 					});
+					break;
+				case "news":
+					add({
+						kind: "news",
+						articles: chatEvent.articles,
+						labels: [],
+						at: Date.now(),
+					});
+					break;
+				case "news_labels":
+					// Labels arrive after the cards; attach them to this turn's news.
+					for (const entry of entries.slice(turnStart)) {
+						if (entry.kind === "news") entry.labels = chatEvent.labels;
+					}
+					saveHistory(storage, entries);
+					render();
 					break;
 				case "history":
 					add({

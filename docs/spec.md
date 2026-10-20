@@ -294,6 +294,20 @@ Returns `{ symbols }`.
   the exact date range, says the data is delayed, and points to a brokerage for real-time
   prices.
 
+### `get_news({ symbols?, limit? })` — 1–10 symbols, 1–10 headlines
+
+- **Data:** Benzinga headlines via Alpaca's news API (`/v1beta1/news`), newest first, 5 by
+  default. Works on the free plan.
+- **Emits a `news` event,** which the client renders as cards: the headline links out, plus
+  the source, time and symbols, and the summary.
+- **Labels:** the model labels each headline in `respond.newsLabels` with its tone
+  (`positive`/`negative`/`neutral`) and type
+  (`news`/`analysis`/`analyst_rating`/`opinion`/`press_release`).
+  - Labels for articles not fetched this turn, or with invalid values, are dropped.
+  - They're sent as a `news_labels` event before `message`.
+  - The UI marks them as the assistant's assessment, not facts.
+- **The model never repeats analyst ratings or price targets.**
+
 ### `respond({ symbols: string[], prose: string })`
 
 - Terminal tool that ends the turn.

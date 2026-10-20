@@ -11,6 +11,7 @@ import {
 	checkAsset,
 	getClock,
 	getDailyBars,
+	getNews,
 	getSnapshots,
 } from "./alpaca";
 import { streamChatTurn } from "./chat";
@@ -72,6 +73,7 @@ export class SessionDO extends DurableObject<Env> {
 				checkAsset: (symbol) => checkAsset(market, symbol),
 				getSnapshots: (symbols) => getSnapshots(market, symbols),
 				getClock: () => getClock(market),
+				getNews: (symbols, limit) => getNews(market, symbols, limit),
 				getDailyBars: (symbols, start, end) =>
 					getDailyBars(market, symbols, start, end),
 				now: () => new Date(),

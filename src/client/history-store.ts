@@ -34,6 +34,22 @@ export interface HistoryRow {
 	low: number | null;
 }
 
+export interface NewsArticle {
+	id: number;
+	headline: string;
+	summary: string;
+	source: string;
+	url: string;
+	symbols: string[];
+	createdAt: string;
+}
+
+export interface NewsLabel {
+	id: number;
+	sentiment: string;
+	kind: string;
+}
+
 export type ChatEntry =
 	| { kind: "user"; text: string; at: number }
 	| { kind: "assistant"; text: string; at: number }
@@ -51,6 +67,7 @@ export type ChatEntry =
 			rows: HistoryRow[];
 			at: number;
 	  }
+	| { kind: "news"; articles: NewsArticle[]; labels: NewsLabel[]; at: number }
 	| { kind: "error"; code: string; at: number };
 
 const KEY = "watchlist:history";
@@ -81,6 +98,14 @@ export function appendEntries(storage: Storage, entries: ChatEntry[]): void {
  * remembers everything shown. Failed turns aren't remembered, so this counts
  * answered exchanges back from the end.
  */
+export function saveHistory(storage: Storage, entries: ChatEntry[]): void {
+	try {
+		storage.setItem(KEY, JSON.stringify(entries.slice(-LIMIT)));
+	} catch {
+		// Storage can be blocked or full; the transcript just won't persist.
+	}
+}
+
 export function memoryBoundary(entries: ChatEntry[]): number | null {
 	let answers = 0;
 	for (let i = entries.length - 1; i >= 0; i--) {

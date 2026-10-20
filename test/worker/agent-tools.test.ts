@@ -40,6 +40,18 @@ const BARS = [
 	{ date: "2026-10-19", open: 110, high: 111, low: 104, close: 105, volume: 1 },
 ];
 
+function article(id: number, symbol: string) {
+	return {
+		id,
+		headline: `${symbol} headline`,
+		summary: "x".repeat(600),
+		source: "benzinga",
+		url: `https://example.com/${id}`,
+		symbols: [symbol],
+		createdAt: "2026-10-19T16:31:00Z",
+	};
+}
+
 function deps(overrides: Partial<ToolDeps> = {}): ToolDeps {
 	let watchlist = ["NET", "AAPL"];
 	return {
@@ -68,6 +80,9 @@ function deps(overrides: Partial<ToolDeps> = {}): ToolDeps {
 		})),
 		getSnapshots: vi.fn(async (symbols: string[]) => symbols.map(snapshot)),
 		getClock: vi.fn(async () => CLOCK),
+		getNews: vi.fn(async (symbols: string[], _limit: number) =>
+			symbols.map((symbol, index) => article(index + 1, symbol)),
+		),
 		getDailyBars: vi.fn(async (symbols: string[]) =>
 			Object.fromEntries(symbols.map((symbol) => [symbol, BARS])),
 		),
@@ -80,6 +95,7 @@ describe("TOOL_DEFINITIONS", () => {
 	it("declares exactly the agent tools", () => {
 		expect(TOOL_DEFINITIONS.map((tool) => tool.name).sort()).toEqual([
 			"add_symbols",
+			"get_news",
 			"get_price_history",
 			"get_snapshots",
 			"list_watchlist",
@@ -261,6 +277,96 @@ describe("toolbox", () => {
 			});
 
 			expect(outcome.events).toEqual([]);
+		});
+	});
+
+	describe("get_news", () => {
+		it("fetches headlines for the watchlist and emits them for display", async () => {
+			const d = deps();
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_news",
+				arguments: {},
+			});
+
+			expect(d.getNews).toHaveBeenCalledWith(["NET", "AAPL"], 5);
+			const articles = [article(1, "NET"), article(2, "AAPL")];
+			expect(outcome.events).toEqual([{ type: "news", articles }]);
+		});
+
+		it("gives the model shortened summaries to classify", async () => {
+			const outcome = await createToolbox(deps()).execute({
+				name: "get_news",
+				arguments: { symbols: ["NET"] },
+			});
+
+			const [first] = (outcome.result as { articles: { summary: string }[] })
+				.articles;
+			expect(first?.summary.length).toBeLessThanOrEqual(400);
+			expect(outcome.result).toMatchObject({
+				articles: [{ id: 1, headline: "NET headline" }],
+			});
+		});
+
+		it("passes a requested limit through", async () => {
+			const d = deps();
+
+			await createToolbox(d).execute({
+				name: "get_news",
+				arguments: { symbols: ["NET"], limit: 3 },
+			});
+
+			expect(d.getNews).toHaveBeenCalledWith(["NET"], 3);
+		});
+
+		it.each([0, 11, 2.5, "five"])("rejects a limit of %j", async (limit) => {
+			const outcome = await createToolbox(deps()).execute({
+				name: "get_news",
+				arguments: { limit },
+			});
+
+			expect(outcome.result).toMatchObject({ error: "invalid_arguments" });
+		});
+
+		it("checks off-list symbols first", async () => {
+			const d = deps({
+				checkAsset: vi.fn(async (symbol: string) => ({
+					symbol,
+					status: "invalid" as const,
+				})),
+			});
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_news",
+				arguments: { symbols: ["ZZZZ"] },
+			});
+
+			expect(d.getNews).not.toHaveBeenCalled();
+			expect(outcome).toEqual({
+				result: {
+					articles: [],
+					unavailable: [{ symbol: "ZZZZ", status: "invalid" }],
+				},
+				events: [],
+			});
+		});
+
+		it("returns market data errors to the model", async () => {
+			const d = deps({
+				getNews: vi.fn(async () => {
+					throw new MarketDataError("market_data_error", "403");
+				}),
+			});
+
+			const outcome = await createToolbox(d).execute({
+				name: "get_news",
+				arguments: {},
+			});
+
+			expect(outcome).toEqual({
+				result: expect.objectContaining({ error: "market_data_error" }),
+				events: [],
+			});
 		});
 	});
 

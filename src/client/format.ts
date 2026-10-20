@@ -51,6 +51,19 @@ export function formatDay(date: string): string {
 	return dayFormat.format(new Date(`${date}T12:00:00Z`));
 }
 
+const newsTimeFormat = new Intl.DateTimeFormat("en-US", {
+	month: "short",
+	day: "numeric",
+	hour: "numeric",
+	minute: "2-digit",
+	timeZone: "America/New_York",
+});
+
+/** Formats a timestamp as e.g. "Oct 19, 12:31 PM ET". */
+export function formatNewsTime(iso: string): string {
+	return `${newsTimeFormat.format(new Date(iso))} ET`;
+}
+
 export function formatAsOf(iso: string): string {
 	return `${timeFormat.format(new Date(iso))} ET`;
 }

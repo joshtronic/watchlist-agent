@@ -27,6 +27,8 @@ describe("createAiClient", () => {
 		expect(ai.run).toHaveBeenCalledWith(CHAT_MODEL, {
 			messages,
 			tools: [{ type: "function", function: tools[0] }],
+			// The default (256) truncates answers that carry news labels.
+			max_tokens: 1024,
 		});
 	});
 

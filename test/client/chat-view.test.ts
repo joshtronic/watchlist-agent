@@ -142,6 +142,80 @@ describe("renderTranscript", () => {
 	});
 });
 
+describe("news cards", () => {
+	const article = (overrides = {}) => ({
+		id: 7,
+		headline: "<b>AMD</b> rallies",
+		summary: "Chips led the market higher.",
+		source: "benzinga",
+		url: "https://example.com/7",
+		symbols: ["AMD"],
+		createdAt: "2026-10-19T16:31:00Z",
+		...overrides,
+	});
+
+	it("renders headlines as text with a safe link", () => {
+		renderTranscript(
+			container,
+			[{ kind: "news", articles: [article()], labels: [], at: 1 }],
+			null,
+		);
+
+		const link = container.querySelector<HTMLAnchorElement>(
+			'[data-entry="news"] a',
+		);
+		expect(link?.textContent).toBe("<b>AMD</b> rallies");
+		expect(link?.href).toBe("https://example.com/7");
+		expect(link?.rel).toContain("noopener");
+		expect(container.querySelector('[data-entry="news"] b')).toBeNull();
+	});
+
+	it("does not link to non-web URLs", () => {
+		renderTranscript(
+			container,
+			[
+				{
+					kind: "news",
+					articles: [article({ url: "javascript:alert(1)" })],
+					labels: [],
+					at: 1,
+				},
+			],
+			null,
+		);
+
+		expect(container.querySelector('[data-entry="news"] a')).toBeNull();
+		expect(
+			container.querySelector('[data-entry="news"]')?.textContent,
+		).toContain("<b>AMD</b> rallies");
+	});
+
+	it("shows the assistant's labels, marked as its assessment", () => {
+		renderTranscript(
+			container,
+			[
+				{
+					kind: "news",
+					articles: [article()],
+					labels: [{ id: 7, sentiment: "negative", kind: "analyst_rating" }],
+					at: 1,
+				},
+			],
+			null,
+		);
+
+		const card = container.querySelector<HTMLElement>("[data-article='7']");
+		expect(
+			card?.querySelector("[data-sentiment]")?.getAttribute("data-sentiment"),
+		).toBe("negative");
+		expect(card?.textContent).toMatch(/negative/i);
+		expect(card?.textContent).toMatch(/analyst rating/i);
+		expect(container.querySelector('[data-entry="news"]')?.textContent).toMatch(
+			/assistant's assessment/i,
+		);
+	});
+});
+
 describe("history tables", () => {
 	const historyRow = {
 		symbol: "AMD",
@@ -275,6 +349,8 @@ describe("describeToolCall", () => {
 			{ symbols: ["AMD"], period: "1w" },
 			"Looking up price history for AMD…",
 		],
+		["get_news", { symbols: ["AMD"] }, "Reading the latest news for AMD…"],
+		["get_news", {}, "Reading the latest news for your watchlist…"],
 		["mystery", {}, "Working…"],
 	])("%s %j → %s", (name, args, expected) => {
 		expect(describeToolCall(name, args)).toBe(expected);
