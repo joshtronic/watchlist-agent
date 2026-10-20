@@ -332,6 +332,10 @@ describe("buildSystemPrompt", () => {
 		expect(text).toMatch(/say exactly what you are showing instead/i);
 	});
 
+	it("only lets the model point at tables it fetched this turn", () => {
+		expect(prompt()).toMatch(/only refer to a table you fetched in this turn/i);
+	});
+
 	it("warns against calling a closed session today's move", () => {
 		expect(prompt()).toMatch(/market is closed/i);
 	});
