@@ -4,6 +4,14 @@ export interface ChatMessage {
 	role: "system" | "user" | "assistant" | "tool";
 	content: string;
 	name?: string;
+	// The model only reads a tool result that follows its own tool call
+	// (assistant `tool_calls`) and carries the matching `tool_call_id`.
+	tool_calls?: {
+		id: string;
+		type: "function";
+		function: { name: string; arguments: string };
+	}[];
+	tool_call_id?: string;
 }
 
 export interface ToolDefinition {

@@ -78,8 +78,21 @@ export async function runAgentTurn(input: TurnInput): Promise<TurnResult> {
 		if (toolCalls.length > 0) {
 			// Any respond in the same reply was written before seeing these
 			// results, so it is ignored and the model is asked again.
-			for (const call of toolCalls) {
-				messages.push(await runTool(input, call));
+			const ids = toolCalls.map((_, index) => `call_${iteration}_${index}`);
+			messages.push({
+				role: "assistant",
+				content: "",
+				tool_calls: toolCalls.map((call, index) => ({
+					id: ids[index] ?? "",
+					type: "function",
+					function: {
+						name: call.name,
+						arguments: JSON.stringify(call.arguments ?? {}),
+					},
+				})),
+			});
+			for (const [index, call] of toolCalls.entries()) {
+				messages.push(await runTool(input, call, ids[index] ?? ""));
 			}
 			continue;
 		}
@@ -109,12 +122,17 @@ export async function runAgentTurn(input: TurnInput): Promise<TurnResult> {
 	return { ok: false, error: "loop_limit" };
 }
 
-async function runTool(input: TurnInput, call: ToolCall): Promise<ChatMessage> {
+async function runTool(
+	input: TurnInput,
+	call: ToolCall,
+	id: string,
+): Promise<ChatMessage> {
 	input.emit({ type: "tool_call", name: call.name, args: call.arguments });
 	const outcome = await input.toolbox.execute(call);
 	for (const event of outcome.events) input.emit(event);
 	return {
 		role: "tool",
+		tool_call_id: id,
 		name: call.name,
 		content: JSON.stringify(outcome.result),
 	};
