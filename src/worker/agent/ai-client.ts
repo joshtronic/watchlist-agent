@@ -1,4 +1,6 @@
 export const CHAT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+// Workers AI defaults to 256, which cuts off answers that carry news labels.
+const MAX_TOKENS = 1024;
 
 export interface ChatMessage {
 	role: "system" | "user" | "assistant" | "tool";
@@ -55,6 +57,7 @@ export function createAiClient(ai: AiRunner): AiClient {
 			output = await ai.run(CHAT_MODEL, {
 				messages,
 				tools: tools.map((tool) => ({ type: "function", function: tool })),
+				max_tokens: MAX_TOKENS,
 			});
 		} catch (error) {
 			throw toAiError(error);
