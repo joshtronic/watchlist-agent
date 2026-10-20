@@ -102,7 +102,7 @@ spacing:
   "5": "1.5rem"
   "6": "2rem"
   "7": "3rem"
-  column: "46rem"
+  column: "52rem"
 components:
   card:
     backgroundColor: "{colors.card}"
@@ -177,7 +177,7 @@ components:
     backgroundColor: "{colors.card}"
     rounded: "{rounded.composer}"
     padding: "{spacing.2}"
-    width: "min(100%, 46rem)"
+    width: "min(100%, 52rem)"
   composer-input:
     backgroundColor: "transparent"
     textColor: "{colors.ink}"
@@ -199,7 +199,7 @@ Colour is spent sparingly and with meaning. A single saturated blue marks the th
 
 The world comes in two schemes and follows the visitor's system setting. After sunset the paper turns to a warm near-black, the cards to a lifted warm charcoal and the ink to a warm cream; the blue and the brick stay recognisably themselves, lightened just enough to hold contrast. Same layout, same shapes, same rules.
 
-Density is relaxed: one centred column about 46rem wide, a 44px touch floor on every control, and a pinned composer at the bottom so the visitor always knows where to type or speak next. It deliberately refuses the dense finance dashboard and the generic chat-bubble panel.
+Density is relaxed: one centred column about 52rem wide, a 44px touch floor on every control, and a pinned composer at the bottom so the visitor always knows where to type or speak next. It deliberately refuses the dense finance dashboard and the generic chat-bubble panel.
 
 **Key Characteristics:**
 - Warm tinted ground, white soft cards with a faint warm shadow and no borders; in the dark scheme, warm charcoal cards on a near-black ground.
@@ -274,7 +274,7 @@ The root declares `color-scheme: light dark`, and a `prefers-color-scheme: dark`
 
 ## Layout
 
-A single centred column. The header and main area are `min(100%, 46rem + 2rem)` wide with 1rem side padding; the composer bar is `min(100%, 46rem)`. The shell is a three-row grid (header, main, composer): main stacks cards with a 1rem gap, and the conversation card grows to fill the remaining height (minimum 12rem).
+A single centred column. The header and main area are `min(100%, 52rem + 2rem)` wide with 1rem side padding; the composer bar is `min(100%, 52rem)`. The shell is a three-row grid (header, main, composer): main stacks cards with a 1rem gap, and the conversation card grows to fill the remaining height (minimum 12rem).
 
 The composer is `position: sticky` at the bottom on a Warm Paper band (padding 0.75rem 1rem 1rem), so the input is always in reach.
 

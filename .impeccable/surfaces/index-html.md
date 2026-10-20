@@ -32,7 +32,7 @@ STORY: The visitor understands it is a friendly place to keep an eye on a few st
 the numbers come from data rather than the assistant, and knows where to type or speak next.
 
 FIRST VIEWPORT: Desktop. A header row holds "Watchlist Agent" on the left and the Log out
-action on the right. Below it is one centred column, about 760px wide:
+action on the right. Below it is one centred column, about 830px wide:
 - the watchlist card (symbol pills, or an empty state);
 - the conversation card (messages, snapshot tables as their own cards with a plain-language
   key);
