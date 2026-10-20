@@ -21,6 +21,9 @@
 	"vars": {
 		// Injected at deploy: `wrangler deploy --var GIT_COMMIT:<sha>`.
 		"GIT_COMMIT": "",
-		"TURNSTILE_SITE_KEY": "0x4AAAAAAFb-6m0dtfu1GnRs"
+		"TURNSTILE_SITE_KEY": "0x4AAAAAAFb-6m0dtfu1GnRs",
+		"ALPACA_DATA_BASE_URL": "https://data.alpaca.markets",
+		// Paper-trading host; only used for the /v2/assets lookup.
+		"ALPACA_TRADING_BASE_URL": "https://paper-api.alpaca.markets"
 	}
 }

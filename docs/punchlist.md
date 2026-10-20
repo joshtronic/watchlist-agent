@@ -93,10 +93,10 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 3 — Alpaca client
 
-- [ ] Asset validation (`/v2/assets/{symbol}`: active, tradable, `us_equity`).
-- [ ] Batched snapshots (`feed=iex`) → `SnapshotRow` mapping, with change and % computed
+- [x] Asset validation (`/v2/assets/{symbol}`: active, tradable, `us_equity`).
+- [x] Batched snapshots (`feed=iex`) → `SnapshotRow` mapping, with change and % computed
       server-side.
-- [ ] Error mapping (`market_data_error`, `market_data_rate_limited`).
+- [x] Error mapping (`market_data_error`, `market_data_rate_limited`).
 
 ## Phase 4 — Agent loop (fake AI binding)
 
