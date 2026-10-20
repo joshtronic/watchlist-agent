@@ -90,6 +90,9 @@ export interface ToolDeps {
 	now(): Date;
 }
 
+const DEFAULT_NEWS = 5;
+const MAX_NEWS = 10;
+
 const symbolList = {
 	type: "array",
 	items: { type: "string" },
@@ -148,6 +151,23 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
 		},
 	},
 	{
+		name: "get_news",
+		description:
+			"Get the latest news headlines for symbols (defaults to the whole watchlist), newest first, from Benzinga. The user sees them as cards; label each one in respond.",
+		parameters: {
+			type: "object",
+			properties: {
+				symbols: symbolList,
+				limit: {
+					type: "integer",
+					minimum: 1,
+					maximum: MAX_NEWS,
+					description: `How many headlines to fetch (default ${DEFAULT_NEWS}).`,
+				},
+			},
+		},
+	},
+	{
 		name: "respond",
 		description:
 			"Give the user your final answer. Always finish by calling this exactly once.",
@@ -162,6 +182,20 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
 				prose: {
 					type: "string",
 					description: "Your answer in plain words, with no digits at all.",
+				},
+				newsLabels: {
+					type: "array",
+					description:
+						"When you fetched news this turn, one label per headline: its id, its sentiment and what kind of article it is.",
+					items: {
+						type: "object",
+						properties: {
+							id: { type: "integer" },
+							sentiment: { type: "string", enum: [...NEWS_SENTIMENTS] },
+							kind: { type: "string", enum: [...NEWS_KINDS] },
+						},
+						required: ["id", "sentiment", "kind"],
+					},
 				},
 			},
 			required: ["symbols", "prose"],
@@ -179,6 +213,7 @@ export function createToolbox(deps: ToolDeps): Toolbox {
 		remove_symbols: (args) => removeSymbols(deps, args),
 		get_snapshots: (args) => getSnapshots(deps, args),
 		get_price_history: (args) => getPriceHistory(deps, args),
+		get_news: (args) => getNews(deps, args),
 	};
 
 	return {
@@ -290,6 +325,44 @@ async function getSnapshots(
 		result: { asOf, market, rows, unavailable },
 		events: [{ type: "snapshots", asOf, market, rows }],
 	};
+}
+
+// Enough for the model to judge tone without flooding its context.
+const SUMMARY_LIMIT = 400;
+
+async function getNews(deps: ToolDeps, args: unknown): Promise<ToolOutcome> {
+	const requested = readSymbols(args, { required: false });
+	const limit = (args as { limit?: unknown } | null)?.limit ?? DEFAULT_NEWS;
+	if (
+		requested === null ||
+		typeof limit !== "number" ||
+		!Number.isInteger(limit) ||
+		limit < 1 ||
+		limit > MAX_NEWS
+	) {
+		return invalidArguments();
+	}
+
+	const { lookup, unavailable } = await resolveLookup(deps, requested);
+	if (lookup.length === 0) {
+		return { result: { articles: [], unavailable }, events: [] };
+	}
+
+	const articles = await deps.getNews(lookup, limit);
+	return {
+		result: {
+			articles: articles.map(({ url: _url, ...article }) => ({
+				...article,
+				summary: shorten(article.summary, SUMMARY_LIMIT),
+			})),
+			unavailable,
+		},
+		events: [{ type: "news", articles }],
+	};
+}
+
+function shorten(text: string, limit: number): string {
+	return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;

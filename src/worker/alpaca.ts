@@ -160,12 +160,40 @@ function toDailyBar(bar: AlpacaBar): DailyBar {
 	};
 }
 
+/** Latest Benzinga headlines for the symbols, newest first. */
 export async function getNews(
-	_config: AlpacaConfig,
-	_symbols: string[],
-	_limit: number,
+	config: AlpacaConfig,
+	symbols: string[],
+	limit: number,
 ): Promise<NewsArticle[]> {
-	throw new Error("Not implemented");
+	if (symbols.length === 0) return [];
+
+	const url = new URL(`${config.dataBaseUrl}/v1beta1/news`);
+	url.searchParams.set("symbols", symbols.join(","));
+	url.searchParams.set("limit", String(limit));
+	url.searchParams.set("sort", "desc");
+
+	const { news = [] } = await readJson<{
+		news?: {
+			id: number;
+			headline?: string;
+			summary?: string;
+			source?: string;
+			url?: string;
+			symbols?: string[];
+			created_at?: string;
+		}[];
+	}>(await request(config, url.href));
+
+	return news.map((article) => ({
+		id: article.id,
+		headline: article.headline ?? "",
+		summary: article.summary ?? "",
+		source: article.source ?? "",
+		url: article.url ?? "",
+		symbols: article.symbols ?? [],
+		createdAt: article.created_at ?? "",
+	}));
 }
 
 export async function getSnapshots(

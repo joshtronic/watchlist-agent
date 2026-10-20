@@ -40,6 +40,9 @@ export function streamChatTurn(deps: ChatTurnDeps): ReadableStream<Uint8Array> {
 				});
 
 				if (result.ok) {
+					if (result.newsLabels.length > 0) {
+						send("news_labels", { labels: result.newsLabels });
+					}
 					send("message", { prose: result.prose, symbols: result.symbols });
 					await deps.recordTurn({
 						user: deps.message,

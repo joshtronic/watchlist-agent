@@ -7,6 +7,8 @@ import {
 } from "./ai-client";
 import {
 	type AgentEvent,
+	NEWS_KINDS,
+	NEWS_SENTIMENTS,
 	type NewsLabel,
 	TOOL_DEFINITIONS,
 	type Toolbox,
@@ -64,7 +66,8 @@ export function buildSystemPrompt({
 		"- If the user asks about a symbol that is not on their watchlist, answer the question, then ask whether they would like to add it. Never offer to add a symbol that is already on the watchlist above. If the watchlist is full, ask whether they would like to swap a symbol out. Never add it until they accept.",
 		"- Always finish by calling the respond tool exactly once, with your answer as prose and the symbols your answer is about.",
 		"",
-		"What you can do: read and change the watchlist (US stocks and ETFs only); fetch the latest snapshot for symbols (last price, change since the previous close, the day's range, and IEX volume); and fetch price history over a period (past week, month, three months, six months, year to date, or year), which gives the starting and ending price, the change, and the period's high and low.",
+		"What you can do: read and change the watchlist (US stocks and ETFs only); fetch the latest snapshot for symbols (last price, change since the previous close, the day's range, and IEX volume); fetch price history over a period (past week, month, three months, six months, year to date, or year), which gives the starting and ending price, the change, and the period's high and low; and fetch the latest news headlines.",
+		"News: when you fetch news, label every headline in respond with its id, whether its tone for the company looks positive, negative or neutral, and what kind of article it is (news, analysis, analyst_rating, opinion or press_release). In your prose, sum up the overall tone of the coverage in plain words. Never repeat analyst ratings or price targets, and never treat them as a recommendation; the headlines are shown to the user as cards.",
 		'Pick the tool that matches the question: use price history for questions about a period ("how did AMD do last week"), and snapshots for how things stand now. When you answer from price history, name the period the table covers.',
 		"What you cannot do: intraday or hourly moves, company fundamentals (market cap, earnings, revenue, dividends, P/E ratios), analyst ratings, predictions or forecasts, crypto, options, futures, non-US markets, or anything else the tools do not return.",
 		"When a question needs something you cannot do, say so plainly. If you show related data instead, say exactly what you are showing instead (for example: this is the latest snapshot, not last week's performance). Never present data as answering a question it does not answer.",
@@ -100,6 +103,16 @@ export async function runAgentTurn(input: TurnInput): Promise<TurnResult> {
 		{ role: "user", content: input.message },
 	];
 
+	// Articles fetched this turn; only these can be labelled.
+	const newsIds = new Set<number>();
+	const emit = (event: AgentEvent) => {
+		if (event.type === "news") {
+			for (const article of event.articles) newsIds.add(article.id);
+		}
+		input.emit(event);
+	};
+	const turn = { ...input, emit };
+
 	for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
 		let reply: Awaited<ReturnType<AiClient>>;
 		try {
@@ -127,7 +140,7 @@ export async function runAgentTurn(input: TurnInput): Promise<TurnResult> {
 				})),
 			});
 			for (const [index, call] of toolCalls.entries()) {
-				messages.push(await runTool(input, call, ids[index] ?? ""));
+				messages.push(await runTool(turn, call, ids[index] ?? ""));
 			}
 			continue;
 		}
@@ -151,6 +164,7 @@ export async function runAgentTurn(input: TurnInput): Promise<TurnResult> {
 			prose: answer.prose,
 			symbols: answer.symbols,
 			offer: answer.symbols.filter((symbol) => !watchlist.includes(symbol)),
+			newsLabels: readNewsLabels(reply, newsIds),
 		};
 	}
 
@@ -171,6 +185,34 @@ async function runTool(
 		name: call.name,
 		content: JSON.stringify(outcome.result),
 	};
+}
+
+function readNewsLabels(
+	reply: Awaited<ReturnType<AiClient>>,
+	newsIds: Set<number>,
+): NewsLabel[] {
+	const respond = reply.toolCalls.find((c) => c.name === "respond");
+	const raw = (respond?.arguments as { newsLabels?: unknown } | undefined)
+		?.newsLabels;
+	if (!Array.isArray(raw)) return [];
+
+	const labels = new Map<number, NewsLabel>();
+	for (const item of raw) {
+		const { id, sentiment, kind } = (item ?? {}) as Record<string, unknown>;
+		if (
+			typeof id === "number" &&
+			newsIds.has(id) &&
+			NEWS_SENTIMENTS.includes(sentiment as NewsLabel["sentiment"]) &&
+			NEWS_KINDS.includes(kind as NewsLabel["kind"])
+		) {
+			labels.set(id, {
+				id,
+				sentiment: sentiment as NewsLabel["sentiment"],
+				kind: kind as NewsLabel["kind"],
+			});
+		}
+	}
+	return [...labels.values()];
 }
 
 function readAnswer(

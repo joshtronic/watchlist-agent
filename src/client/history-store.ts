@@ -98,8 +98,12 @@ export function appendEntries(storage: Storage, entries: ChatEntry[]): void {
  * remembers everything shown. Failed turns aren't remembered, so this counts
  * answered exchanges back from the end.
  */
-export function saveHistory(_storage: Storage, _entries: ChatEntry[]): void {
-	throw new Error("Not implemented");
+export function saveHistory(storage: Storage, entries: ChatEntry[]): void {
+	try {
+		storage.setItem(KEY, JSON.stringify(entries.slice(-LIMIT)));
+	} catch {
+		// Storage can be blocked or full; the transcript just won't persist.
+	}
 }
 
 export function memoryBoundary(entries: ChatEntry[]): number | null {

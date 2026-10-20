@@ -2,6 +2,7 @@ import {
 	formatAsOf,
 	formatChange,
 	formatDay,
+	formatNewsTime,
 	formatPercent,
 	formatPrice,
 	formatVolume,
@@ -10,6 +11,8 @@ import type {
 	ChatEntry,
 	HistoryRow,
 	MarketClock,
+	NewsArticle,
+	NewsLabel,
 	SnapshotRow,
 } from "./history-store";
 
@@ -125,6 +128,10 @@ export function describeToolCall(name: string, args: unknown): string {
 			return `Removing ${list}…`;
 		case "list_watchlist":
 			return "Checking your watchlist…";
+		case "get_news":
+			return list
+				? `Reading the latest news for ${list}…`
+				: "Reading the latest news for your watchlist…";
 		case "get_price_history":
 			return list
 				? `Looking up price history for ${list}…`
@@ -149,6 +156,8 @@ function renderEntry(entry: ChatEntry): HTMLElement {
 		}
 		case "snapshots":
 			return renderSnapshots(entry.asOf, entry.market, entry.rows);
+		case "news":
+			return renderNews(entry.articles, entry.labels);
 		case "history":
 			return renderTable(
 				"history",
@@ -221,6 +230,93 @@ function renderTable<Row extends TableRow>(
 	scroller.append(table);
 	figure.append(scroller, caption);
 	return figure;
+}
+
+const KIND_LABELS: Record<string, string> = {
+	news: "News",
+	analysis: "Analysis",
+	analyst_rating: "Analyst rating",
+	opinion: "Opinion",
+	press_release: "Press release",
+};
+
+function renderNews(articles: NewsArticle[], labels: NewsLabel[]): HTMLElement {
+	const section = element("section", "news", "news");
+	const list = document.createElement("ul");
+	list.className = "news-list";
+
+	for (const article of articles) {
+		const item = document.createElement("li");
+		item.className = "news-card";
+		item.dataset.article = String(article.id);
+
+		const headline = isWebUrl(article.url)
+			? Object.assign(document.createElement("a"), {
+					href: article.url,
+					target: "_blank",
+					rel: "noopener noreferrer",
+				})
+			: document.createElement("span");
+		headline.className = "news-headline";
+		headline.textContent = article.headline;
+
+		const meta = document.createElement("p");
+		meta.className = "news-meta";
+		meta.textContent = [
+			sourceName(article.source),
+			article.createdAt ? formatNewsTime(article.createdAt) : "",
+			article.symbols.slice(0, 4).join(", "),
+		]
+			.filter(Boolean)
+			.join(" · ");
+
+		item.append(headline, meta);
+		if (article.summary) {
+			const summary = document.createElement("p");
+			summary.className = "news-summary";
+			summary.textContent = article.summary;
+			item.append(summary);
+		}
+
+		const label = labels.find((l) => l.id === article.id);
+		if (label) {
+			const chips = document.createElement("p");
+			chips.className = "news-labels";
+			const sentiment = document.createElement("span");
+			sentiment.className = "news-chip";
+			sentiment.dataset.sentiment = label.sentiment;
+			sentiment.textContent = capitalize(label.sentiment);
+			const kind = document.createElement("span");
+			kind.className = "news-chip";
+			kind.textContent = KIND_LABELS[label.kind] ?? capitalize(label.kind);
+			chips.append(sentiment, kind);
+			item.append(chips);
+		}
+		list.append(item);
+	}
+
+	const caption = document.createElement("p");
+	caption.className = "news-caption";
+	caption.textContent =
+		"Headlines from Benzinga via Alpaca, newest first. Tone and type labels are the assistant's assessment, not facts. Not financial advice.";
+	section.append(list, caption);
+	return section;
+}
+
+function isWebUrl(url: string): boolean {
+	try {
+		return ["http:", "https:"].includes(new URL(url).protocol);
+	} catch {
+		return false;
+	}
+}
+
+function sourceName(source: string): string {
+	return source === "benzinga" ? "Benzinga" : source;
+}
+
+function capitalize(text: string): string {
+	return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function element(tag: string, className: string, entry: string): HTMLElement {
