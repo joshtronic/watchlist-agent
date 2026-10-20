@@ -68,6 +68,21 @@ describe("SessionDO conversation memory", () => {
 		expect(await session.getPendingOffer()).toEqual([]);
 	});
 
+	it("can expire the pending offer on its own", async () => {
+		const session = stub();
+		await session.recordTurn({
+			user: "a",
+			assistant: "b",
+			at: 1,
+			offer: ["SNOW"],
+		});
+
+		await session.clearPendingOffer();
+
+		expect(await session.getPendingOffer()).toEqual([]);
+		expect(await session.getHistory()).toHaveLength(2);
+	});
+
 	it("is wiped along with the session", async () => {
 		const session = stub();
 		await session.create(Date.now());

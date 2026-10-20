@@ -1,4 +1,5 @@
 import { DurableObject } from "cloudflare:workers";
+import type { AiClient } from "./agent/ai-client";
 import type { HistoryMessage } from "./agent/loop";
 import {
 	type AddStatus,
@@ -32,6 +33,19 @@ export interface SessionRecord {
 }
 
 export class SessionDO extends DurableObject<Env> {
+	// Overridable so tests can substitute a fake model.
+	aiClient = (): AiClient => {
+		throw new Error("Not implemented");
+	};
+
+	async chat(_message: string): Promise<ReadableStream<Uint8Array>> {
+		throw new Error("Not implemented");
+	}
+
+	async clearPendingOffer(): Promise<void> {
+		throw new Error("Not implemented");
+	}
+
 	async create(now: number): Promise<void> {
 		if (await this.get()) return;
 
