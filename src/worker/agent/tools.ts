@@ -21,7 +21,8 @@ export interface SnapshotRow extends MarketSnapshot {
 	onWatchlist: boolean;
 }
 
-export type HistoryPeriod = "1w" | "1m" | "3m" | "6m" | "ytd" | "1y";
+export const HISTORY_PERIODS = ["1w", "1m", "3m", "6m", "ytd", "1y"] as const;
+export type HistoryPeriod = (typeof HISTORY_PERIODS)[number];
 
 export interface HistoryRow {
 	symbol: string;
@@ -111,6 +112,24 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
 		parameters: { type: "object", properties: { symbols: symbolList } },
 	},
 	{
+		name: "get_price_history",
+		description:
+			"Get how symbols' prices changed over a period (defaults to the whole watchlist): the starting and ending price, the change, and the period's high and low, from daily closing prices across all US exchanges, delayed at least fifteen minutes. The user sees the results as a table.",
+		parameters: {
+			type: "object",
+			properties: {
+				period: {
+					type: "string",
+					enum: [...HISTORY_PERIODS],
+					description:
+						"1w = past week, 1m = past month, 3m = past three months, 6m = past six months, ytd = year to date, 1y = past year.",
+				},
+				symbols: symbolList,
+			},
+			required: ["period"],
+		},
+	},
+	{
 		name: "respond",
 		description:
 			"Give the user your final answer. Always finish by calling this exactly once.",
@@ -141,6 +160,7 @@ export function createToolbox(deps: ToolDeps): Toolbox {
 		add_symbols: (args) => addSymbols(deps, args),
 		remove_symbols: (args) => removeSymbols(deps, args),
 		get_snapshots: (args) => getSnapshots(deps, args),
+		get_price_history: (args) => getPriceHistory(deps, args),
 	};
 
 	return {
@@ -222,25 +242,11 @@ async function getSnapshots(
 	const requested = readSymbols(args, { required: false });
 	if (requested === null) return invalidArguments();
 
-	const watchlist = await deps.getWatchlist();
 	const asOf = deps.now().toISOString();
-	const symbols = requested
-		? [...new Set(requested.map(normalizeLoosely))]
-		: watchlist;
-
-	const unavailable: AssetCheck[] = [];
-	const lookup: string[] = [];
-	for (const symbol of symbols) {
-		if (!normalizeSymbol(symbol)) {
-			unavailable.push({ symbol, status: "invalid" });
-		} else if (watchlist.includes(symbol)) {
-			lookup.push(symbol);
-		} else {
-			const asset = await deps.checkAsset(symbol);
-			if (asset.status === "valid") lookup.push(symbol);
-			else unavailable.push(asset);
-		}
-	}
+	const { watchlist, symbols, lookup, unavailable } = await resolveLookup(
+		deps,
+		requested,
+	);
 
 	if (lookup.length === 0) {
 		return {
@@ -266,6 +272,151 @@ async function getSnapshots(
 		result: { asOf, market, rows, unavailable },
 		events: [{ type: "snapshots", asOf, market, rows }],
 	};
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+// SIP history is free once it is at least fifteen minutes old.
+const SIP_DELAY_MS = 16 * 60 * 1000;
+// Fetch a little before the period so the last earlier close is available.
+const BASELINE_LOOKBACK_DAYS = 10;
+
+async function getPriceHistory(
+	deps: ToolDeps,
+	args: unknown,
+): Promise<ToolOutcome> {
+	const period = (args as { period?: unknown } | null)?.period;
+	const requested = readSymbols(args, { required: false });
+	if (
+		requested === null ||
+		!HISTORY_PERIODS.includes(period as HistoryPeriod)
+	) {
+		return invalidArguments();
+	}
+
+	const now = deps.now();
+	const from = periodStart(period as HistoryPeriod, now);
+	const { watchlist, lookup, unavailable } = await resolveLookup(
+		deps,
+		requested,
+	);
+	if (lookup.length === 0) {
+		return { result: { period, from, rows: [], unavailable }, events: [] };
+	}
+
+	const fetchFrom = new Date(
+		new Date(`${from}T00:00:00Z`).getTime() - BASELINE_LOOKBACK_DAYS * DAY_MS,
+	);
+	const bars = await deps.getDailyBars(
+		lookup,
+		fetchFrom.toISOString(),
+		new Date(now.getTime() - SIP_DELAY_MS).toISOString(),
+	);
+	const rows = lookup.map((symbol) =>
+		historyRow(symbol, watchlist.includes(symbol), bars[symbol] ?? [], from),
+	);
+	return {
+		result: { period, from, rows, unavailable },
+		events: [{ type: "history", period: period as HistoryPeriod, from, rows }],
+	};
+}
+
+function periodStart(period: HistoryPeriod, now: Date): string {
+	const date = new Date(
+		Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+	);
+	switch (period) {
+		case "1w":
+			date.setUTCDate(date.getUTCDate() - 7);
+			break;
+		case "1m":
+			date.setUTCMonth(date.getUTCMonth() - 1);
+			break;
+		case "3m":
+			date.setUTCMonth(date.getUTCMonth() - 3);
+			break;
+		case "6m":
+			date.setUTCMonth(date.getUTCMonth() - 6);
+			break;
+		case "ytd":
+			date.setUTCMonth(0, 1);
+			break;
+		case "1y":
+			date.setUTCFullYear(date.getUTCFullYear() - 1);
+			break;
+	}
+	return date.toISOString().slice(0, 10);
+}
+
+/**
+ * The change is measured from the last close before the period (falling back
+ * to the first open in it) to the latest close.
+ */
+function historyRow(
+	symbol: string,
+	onWatchlist: boolean,
+	bars: DailyBar[],
+	from: string,
+): HistoryRow {
+	const sorted = [...bars].sort((a, b) => a.date.localeCompare(b.date));
+	const inPeriod = sorted.filter((bar) => bar.date >= from);
+	const baseline = sorted.filter((bar) => bar.date < from).at(-1);
+	const first = inPeriod[0];
+	const last = inPeriod.at(-1);
+	if (!first || !last) {
+		return {
+			symbol,
+			onWatchlist,
+			startDate: null,
+			endDate: null,
+			startPrice: null,
+			endPrice: null,
+			change: null,
+			changePct: null,
+			high: null,
+			low: null,
+		};
+	}
+
+	const startPrice = baseline?.close ?? first.open;
+	const change = last.close - startPrice;
+	return {
+		symbol,
+		onWatchlist,
+		startDate: baseline?.date ?? first.date,
+		endDate: last.date,
+		startPrice,
+		endPrice: last.close,
+		change,
+		changePct: startPrice ? (change / startPrice) * 100 : null,
+		high: Math.max(...inPeriod.map((bar) => bar.high)),
+		low: Math.min(...inPeriod.map((bar) => bar.low)),
+	};
+}
+
+/**
+ * Splits requested symbols (or the whole watchlist) into those to look up and
+ * those that are unavailable. Off-list symbols are checked with the market.
+ */
+async function resolveLookup(deps: ToolDeps, requested: string[] | undefined) {
+	const watchlist = await deps.getWatchlist();
+	const symbols = requested
+		? [...new Set(requested.map(normalizeLoosely))]
+		: watchlist;
+
+	const unavailable: AssetCheck[] = [];
+	const lookup: string[] = [];
+	for (const symbol of symbols) {
+		if (!normalizeSymbol(symbol)) {
+			unavailable.push({ symbol, status: "invalid" });
+		} else if (watchlist.includes(symbol)) {
+			lookup.push(symbol);
+		} else {
+			const asset = await deps.checkAsset(symbol);
+			if (asset.status === "valid") lookup.push(symbol);
+			else unavailable.push(asset);
+		}
+	}
+	return { watchlist, symbols, lookup, unavailable };
 }
 
 // The clock only labels the data, so losing it shouldn't lose the snapshots.

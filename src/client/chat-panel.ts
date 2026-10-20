@@ -87,6 +87,15 @@ export function mountChatPanel({
 						at: Date.now(),
 					});
 					break;
+				case "history":
+					add({
+						kind: "history",
+						period: chatEvent.period,
+						from: chatEvent.from,
+						rows: chatEvent.rows,
+						at: Date.now(),
+					});
+					break;
 				case "message":
 					add({ kind: "assistant", text: chatEvent.prose, at: Date.now() });
 					break;

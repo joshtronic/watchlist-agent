@@ -279,6 +279,21 @@ Returns `{ symbols }`.
 - Emits a `snapshots` event with the rows the server computed, each flagged `onWatchlist`, and
   returns the same rows to the model.
 
+### `get_price_history({ period, symbols? })` — 1–10 symbols
+
+- `period` is one of `1w`, `1m`, `3m`, `6m`, `ytd` or `1y`, and is required. Symbols default
+  to the whole watchlist and are checked like `get_snapshots`.
+- **Data:** split-adjusted daily bars from all US exchanges (SIP). The request ends at least
+  sixteen minutes ago, which the free plan allows.
+- **Each row** is computed on the server:
+  - the start price, which is the last close before the period, falling back to the first
+    open in it;
+  - the latest close, the change and the % change;
+  - the period's high and low.
+- **Output:** emits a `history` event and the client renders it as a table. The caption names
+  the exact date range, says the data is delayed, and points to a brokerage for real-time
+  prices.
+
 ### `respond({ symbols: string[], prose: string })`
 
 - Terminal tool that ends the turn.

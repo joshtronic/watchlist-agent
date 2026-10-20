@@ -91,13 +91,63 @@ export async function getClock(config: AlpacaConfig): Promise<MarketClock> {
 	};
 }
 
+/**
+ * Split-adjusted daily bars from all US exchanges (SIP). The free plan allows
+ * SIP history as long as `end` is at least fifteen minutes in the past.
+ */
 export async function getDailyBars(
-	_config: AlpacaConfig,
-	_symbols: string[],
-	_start: string,
-	_end: string,
+	config: AlpacaConfig,
+	symbols: string[],
+	start: string,
+	end: string,
 ): Promise<Record<string, DailyBar[]>> {
-	throw new Error("Not implemented");
+	const result: Record<string, DailyBar[]> = {};
+	if (symbols.length === 0) return result;
+
+	let pageToken: string | null = null;
+	do {
+		const url = new URL(`${config.dataBaseUrl}/v2/stocks/bars`);
+		url.searchParams.set("symbols", symbols.join(","));
+		url.searchParams.set("timeframe", "1Day");
+		url.searchParams.set("start", start);
+		url.searchParams.set("end", end);
+		url.searchParams.set("feed", "sip");
+		url.searchParams.set("adjustment", "split");
+		url.searchParams.set("limit", "10000");
+		if (pageToken) url.searchParams.set("page_token", pageToken);
+
+		const page = await readJson<{
+			bars?: Record<string, AlpacaBar[]>;
+			next_page_token?: string | null;
+		}>(await request(config, url.href));
+
+		for (const [symbol, bars] of Object.entries(page.bars ?? {})) {
+			result[symbol] = [...(result[symbol] ?? []), ...bars.map(toDailyBar)];
+		}
+		pageToken = page.next_page_token ?? null;
+	} while (pageToken);
+
+	return result;
+}
+
+interface AlpacaBar {
+	t: string;
+	o: number;
+	h: number;
+	l: number;
+	c: number;
+	v: number;
+}
+
+function toDailyBar(bar: AlpacaBar): DailyBar {
+	return {
+		date: bar.t.slice(0, 10),
+		open: bar.o,
+		high: bar.h,
+		low: bar.l,
+		close: bar.c,
+		volume: bar.v,
+	};
 }
 
 export async function getSnapshots(

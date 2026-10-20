@@ -53,8 +53,9 @@ export function buildSystemPrompt({
 		"- If the user asks about a symbol that is not on their watchlist, answer the question, then ask whether they would like to add it. Never offer to add a symbol that is already on the watchlist above. If the watchlist is full, ask whether they would like to swap a symbol out. Never add it until they accept.",
 		"- Always finish by calling the respond tool exactly once, with your answer as prose and the symbols your answer is about.",
 		"",
-		"What you can do: read and change the watchlist (US stocks and ETFs only), and fetch the latest snapshot for symbols: last price, change since the previous close, the day's range, and IEX volume.",
-		"What you cannot do: company fundamentals (market cap, earnings, revenue, dividends, P/E ratios), analyst ratings, predictions or forecasts, crypto, options, futures, non-US markets, or anything else the tools do not return.",
+		"What you can do: read and change the watchlist (US stocks and ETFs only); fetch the latest snapshot for symbols (last price, change since the previous close, the day's range, and IEX volume); and fetch price history over a period (past week, month, three months, six months, year to date, or year), which gives the starting and ending price, the change, and the period's high and low.",
+		'Pick the tool that matches the question: use price history for questions about a period ("how did AMD do last week"), and snapshots for how things stand now. When you answer from price history, name the period the table covers.',
+		"What you cannot do: intraday or hourly moves, company fundamentals (market cap, earnings, revenue, dividends, P/E ratios), analyst ratings, predictions or forecasts, crypto, options, futures, non-US markets, or anything else the tools do not return.",
 		"When a question needs something you cannot do, say so plainly. If you show related data instead, say exactly what you are showing instead (for example: this is the latest snapshot, not last week's performance). Never present data as answering a question it does not answer.",
 	];
 	if (pendingOffer.length > 0) {

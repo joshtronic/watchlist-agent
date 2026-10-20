@@ -40,6 +40,17 @@ export function formatVolume(value: number | null): string {
 	return String(value);
 }
 
+const dayFormat = new Intl.DateTimeFormat("en-US", {
+	month: "short",
+	day: "numeric",
+	timeZone: "UTC",
+});
+
+/** Formats a trading date (YYYY-MM-DD) as e.g. "Oct 9". */
+export function formatDay(date: string): string {
+	return dayFormat.format(new Date(`${date}T12:00:00Z`));
+}
+
 export function formatAsOf(iso: string): string {
 	return `${timeFormat.format(new Date(iso))} ET`;
 }

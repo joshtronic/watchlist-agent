@@ -122,7 +122,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
       crypto, options, non-US), and say exactly what's shown instead on a miss.
 - [x] Market clock on snapshots; captions explain the IEX source and point to a brokerage for
       real-time prices.
-- [ ] `get_price_history` tool and history tables.
+- [x] `get_price_history` tool and history tables.
 - [ ] `get_news` tool, news cards, and AI-assessed sentiment and type labels.
 
 ## Phase 6 — Limits and errors

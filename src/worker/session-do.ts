@@ -6,7 +6,13 @@ import {
 } from "./agent/ai-client";
 import type { HistoryMessage } from "./agent/loop";
 import { createToolbox } from "./agent/tools";
-import { alpacaConfig, checkAsset, getClock, getSnapshots } from "./alpaca";
+import {
+	alpacaConfig,
+	checkAsset,
+	getClock,
+	getDailyBars,
+	getSnapshots,
+} from "./alpaca";
 import { streamChatTurn } from "./chat";
 import {
 	type AddStatus,
@@ -66,6 +72,8 @@ export class SessionDO extends DurableObject<Env> {
 				checkAsset: (symbol) => checkAsset(market, symbol),
 				getSnapshots: (symbols) => getSnapshots(market, symbols),
 				getClock: () => getClock(market),
+				getDailyBars: (symbols, start, end) =>
+					getDailyBars(market, symbols, start, end),
 				now: () => new Date(),
 			}),
 			history: await this.getHistory(),

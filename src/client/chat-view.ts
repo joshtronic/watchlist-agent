@@ -1,6 +1,7 @@
 import {
 	formatAsOf,
 	formatChange,
+	formatDay,
 	formatPercent,
 	formatPrice,
 	formatVolume,
@@ -60,8 +61,35 @@ export function snapshotCaption(
 	return `Data as of ${time}. ${source} ${BROKERAGE_NOTE}`;
 }
 
-export function historyCaption(_period: string, _rows: HistoryRow[]): string {
-	throw new Error("Not implemented");
+const PERIOD_LABELS: Record<string, string> = {
+	"1w": "Past week",
+	"1m": "Past month",
+	"3m": "Past three months",
+	"6m": "Past six months",
+	ytd: "Year to date",
+	"1y": "Past year",
+};
+
+const HISTORY_COLUMNS: [label: string, cell: (row: HistoryRow) => string][] = [
+	["Start", (row) => formatPrice(row.startPrice)],
+	["End", (row) => formatPrice(row.endPrice)],
+	["Change", (row) => formatChange(row.change)],
+	["Change %", (row) => formatPercent(row.changePct)],
+	["Period high", (row) => formatPrice(row.high)],
+	["Period low", (row) => formatPrice(row.low)],
+];
+
+/** Explains a history table's period, source and delay. */
+export function historyCaption(period: string, rows: HistoryRow[]): string {
+	const label = PERIOD_LABELS[period] ?? "This period";
+	const starts = rows.flatMap((row) => (row.startDate ? [row.startDate] : []));
+	const ends = rows.flatMap((row) => (row.endDate ? [row.endDate] : []));
+	if (starts.length === 0 || ends.length === 0) {
+		return `${label}: no price data was available for this period.`;
+	}
+	const from = formatDay(starts.sort()[0] ?? "");
+	const to = formatDay(ends.sort().at(-1) ?? "");
+	return `${label}: daily closing prices from ${from} to ${to}, across all US exchanges and delayed at least fifteen minutes. The change is measured from the close on ${from}. ${BROKERAGE_NOTE}`;
 }
 
 export function chatErrorMessage(code: string): string {
@@ -97,6 +125,10 @@ export function describeToolCall(name: string, args: unknown): string {
 			return `Removing ${list}…`;
 		case "list_watchlist":
 			return "Checking your watchlist…";
+		case "get_price_history":
+			return list
+				? `Looking up price history for ${list}…`
+				: "Looking up price history for your watchlist…";
 		default:
 			return "Working…";
 	}
@@ -117,6 +149,13 @@ function renderEntry(entry: ChatEntry): HTMLElement {
 		}
 		case "snapshots":
 			return renderSnapshots(entry.asOf, entry.market, entry.rows);
+		case "history":
+			return renderTable(
+				"history",
+				HISTORY_COLUMNS,
+				entry.rows,
+				historyCaption(entry.period, entry.rows),
+			);
 	}
 }
 
@@ -125,13 +164,28 @@ function renderSnapshots(
 	market: MarketClock | null | undefined,
 	rows: SnapshotRow[],
 ): HTMLElement {
-	const figure = element("figure", "snapshot", "snapshots");
+	return renderTable("snapshots", COLUMNS, rows, snapshotCaption(asOf, market));
+}
+
+interface TableRow {
+	symbol: string;
+	onWatchlist: boolean;
+	change: number | null;
+}
+
+function renderTable<Row extends TableRow>(
+	entry: string,
+	columns: [label: string, cell: (row: Row) => string][],
+	rows: Row[],
+	captionText: string,
+): HTMLElement {
+	const figure = element("figure", "snapshot", entry);
 	const scroller = document.createElement("div");
 	scroller.className = "snapshot-scroll";
 	const table = document.createElement("table");
 
 	const head = table.createTHead().insertRow();
-	for (const label of ["Symbol", ...COLUMNS.map(([label]) => label)]) {
+	for (const label of ["Symbol", ...columns.map(([label]) => label)]) {
 		const th = document.createElement("th");
 		th.scope = "col";
 		th.textContent = label;
@@ -152,16 +206,18 @@ function renderSnapshots(
 			symbol.append(" ", note);
 		}
 		tr.append(symbol);
-		for (const [, cell] of COLUMNS) {
+		for (const [label, cell] of columns) {
 			const td = tr.insertCell();
 			td.textContent = cell(row);
+			// Change columns take the up/down colour (always alongside a sign).
+			if (label.startsWith("Change")) td.dataset.signed = "";
 		}
 		const direction = Math.sign(row.change ?? 0);
 		if (direction !== 0) tr.dataset.direction = direction > 0 ? "up" : "down";
 	}
 
 	const caption = document.createElement("figcaption");
-	caption.textContent = snapshotCaption(asOf, market);
+	caption.textContent = captionText;
 	scroller.append(table);
 	figure.append(scroller, caption);
 	return figure;
