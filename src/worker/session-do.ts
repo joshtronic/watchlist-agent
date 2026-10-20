@@ -1,4 +1,5 @@
 import { DurableObject } from "cloudflare:workers";
+import type { HistoryMessage } from "./agent/loop";
 import {
 	type AddStatus,
 	normalizeSymbol,
@@ -12,6 +13,13 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const INACTIVITY_WIPE_MS = 365 * DAY_MS;
 const SESSION_KEY = "session";
 const WATCHLIST_KEY = "watchlist";
+
+export interface TurnRecord {
+	user: string;
+	assistant: string;
+	at: number;
+	offer: string[];
+}
 
 export interface SessionRecord {
 	disclaimerAcceptedAt: number;
@@ -104,6 +112,18 @@ export class SessionDO extends DurableObject<Env> {
 		const watchlist = [...STARTER_WATCHLIST];
 		await this.ctx.storage.put(WATCHLIST_KEY, watchlist);
 		return watchlist;
+	}
+
+	async getHistory(): Promise<HistoryMessage[]> {
+		throw new Error("Not implemented");
+	}
+
+	async getPendingOffer(): Promise<string[]> {
+		throw new Error("Not implemented");
+	}
+
+	async recordTurn(_turn: TurnRecord): Promise<void> {
+		throw new Error("Not implemented");
 	}
 
 	override async alarm(): Promise<void> {

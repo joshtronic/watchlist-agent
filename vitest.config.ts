@@ -8,6 +8,8 @@ export default defineConfig({
 				plugins: [
 					cloudflareTest({
 						wrangler: { configPath: "./wrangler.jsonc" },
+						// Tests inject a fake AI client; never reach Cloudflare.
+						remoteBindings: false,
 						// Never let tests see real secrets from .dev.vars.
 						miniflare: {
 							bindings: {

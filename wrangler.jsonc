@@ -13,6 +13,8 @@
 	// Static assets come from the Vite client build; the worker handles /api.
 	"assets": { "run_worker_first": ["/api/*"] },
 
+	"ai": { "binding": "AI", "remote": true },
+
 	"durable_objects": {
 		"bindings": [{ "name": "SESSION", "class_name": "SessionDO" }]
 	},

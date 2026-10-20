@@ -26,7 +26,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
     key is kept out of the repo and chat.
 - [x] **Local secrets:** copy `.dev.vars.example` to `.dev.vars` and fill in `ALPACA_API_KEY`,
       `ALPACA_SECRET_KEY` and `TURNSTILE_SECRET_KEY`.
-- [ ] **Production secrets:** after the first deploy creates the Worker, run
+- [x] **Production secrets:** after the first deploy creates the Worker, run
       `npx wrangler secret put` for each of the three secrets above.
 
 ## Phase B — Shell (commits to `main`)
@@ -72,7 +72,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
       `github.sha`, and fails the job if it never does.
 - [x] **Verify end to end:** push to `main` and watch CI, the deploy and the smoke check go
       green.
-- [ ] **Switch to branches + PRs from here on.** Optionally (Josh), protect `main` with required
+- [x] **Switch to branches from here on** (no PRs for now; Josh's call). Optionally (Josh), protect `main` with required
       CI checks.
 
 ## Phase 1 — Session
@@ -127,7 +127,7 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 8 — Live suite (`npm run test:live`)
 
-- [ ] Alpaca contract checks + every starter symbol active and tradable.
+- [x] Alpaca contract checks + every starter symbol active and tradable: covered by `npm run check:alpaca` (a manual script, not a test suite; the rest of Phase 8 follows the same pattern).
 - [ ] Whisper fixtures (including a real Firefox ogg recording) → expected tickers.
 - [ ] Llama tool-selection cases, digit-check rates, and the pending-offer cases.
 
