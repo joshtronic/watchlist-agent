@@ -6,6 +6,8 @@ import { clearLocalData } from "./local-data";
 import { mountLogout } from "./logout";
 import { createSession, getConfig, getSession, logout } from "./session-api";
 import { loadTurnstile } from "./turnstile";
+import { applyStarter } from "./watchlist-api";
+import { mountWatchlistCard } from "./watchlist-card";
 
 const app = document.querySelector<HTMLElement>("#app");
 if (!app) throw new Error("Missing #app");
@@ -127,13 +129,11 @@ function showApp(watchlist: string[]) {
 			</header>
 			<main class="shell-main">
 				<p id="logout-error" class="alert" role="alert" hidden></p>
-				<section class="card" aria-labelledby="watchlist-title">
-					<div class="card-heading">
-						<h2 id="watchlist-title">Your watchlist</h2>
-						<span id="watchlist-count" class="muted"></span>
-					</div>
-					<div id="watchlist-body"></div>
-				</section>
+				<section
+					id="watchlist"
+					class="card"
+					aria-labelledby="watchlist-title"
+				></section>
 				<section class="card conversation" aria-label="Conversation">
 					<div class="conversation-empty">
 						<h2>Chat is on its way</h2>
@@ -168,8 +168,11 @@ function showApp(watchlist: string[]) {
 			</footer>
 		</div>
 	`;
-	find("#watchlist-count").textContent = `${watchlist.length} of 10`;
-	renderWatchlist(find("#watchlist-body"), watchlist);
+	mountWatchlistCard(find("#watchlist"), {
+		watchlist,
+		onStart: applyStarter,
+		onRefresh: () => window.location.reload(),
+	});
 
 	mountLogout(find("#logout"), {
 		onConfirm: async () => {
@@ -187,26 +190,6 @@ function showApp(watchlist: string[]) {
 			await showGate();
 		},
 	});
-}
-
-function renderWatchlist(container: HTMLElement, watchlist: string[]) {
-	if (watchlist.length === 0) {
-		const empty = document.createElement("p");
-		empty.className = "muted";
-		empty.textContent =
-			"Up to 10 US stocks or ETFs. You'll add them by asking, once chat is ready.";
-		container.replaceChildren(empty);
-		return;
-	}
-
-	const list = document.createElement("ul");
-	list.className = "watchlist-pills";
-	for (const symbol of watchlist) {
-		const item = document.createElement("li");
-		item.textContent = symbol;
-		list.append(item);
-	}
-	container.replaceChildren(list);
 }
 
 function find<T extends HTMLElement = HTMLElement>(selector: string): T {

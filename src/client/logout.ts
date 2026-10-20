@@ -12,7 +12,7 @@ export function mountLogout(
 	container.innerHTML = `
 		<button id="logout-open" class="button button-quiet" type="button">
 			${logoutIcon}
-			Log out
+			<span class="button-label">Log out</span>
 		</button>
 		<div
 			id="logout-confirmation"

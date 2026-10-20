@@ -87,6 +87,12 @@ body {
 	min-height: 100dvh;
 }
 
+/* Component display rules must never override the hidden attribute. */
+[hidden] {
+	/* biome-ignore lint/complexity/noImportantStyles: hidden must beat component display rules */
+	display: none !important;
+}
+
 ::selection {
 	background: var(--selection);
 	color: var(--ink);
@@ -301,6 +307,23 @@ h1:has(.logo-mark) {
 	color: var(--danger-ink);
 }
 
+/* An alert that carries its own recovery action. */
+.alert-action {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-3);
+	flex-wrap: wrap;
+}
+
+.alert-action .button-quiet {
+	background: var(--card);
+}
+
+#watchlist-starter {
+	margin-top: var(--space-4);
+}
+
 /* Signed-in shell: header, one centred column, input bar pinned below. */
 
 .shell {
@@ -457,11 +480,6 @@ h1:has(.logo-mark) {
 	background: var(--card);
 }
 
-.logout-confirmation[hidden],
-.button[hidden] {
-	display: none;
-}
-
 /* Narrow screens: tighter gate padding so Turnstile's 300px minimum fits, and
    Send keeps its icon and accessible name but drops the label. */
 @media (max-width: 30rem) {
@@ -473,7 +491,8 @@ h1:has(.logo-mark) {
 		padding: var(--space-5) var(--space-4);
 	}
 
-	.composer-bar .button-label {
+	.composer-bar .button-label,
+	.logout .button-label {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -482,7 +501,8 @@ h1:has(.logo-mark) {
 		white-space: nowrap;
 	}
 
-	.composer-bar .button-primary {
+	.composer-bar .button-primary,
+	#logout-open {
 		width: 2.75rem;
 		padding: 0;
 	}

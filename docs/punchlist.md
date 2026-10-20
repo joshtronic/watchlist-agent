@@ -87,9 +87,9 @@ tokens into the Claude session — set them in your own terminal or the dashboar
 
 ## Phase 2 — Watchlist core
 
-- [ ] Watchlist storage, normalisation and the cap of 10.
-- [ ] Starter list module + `POST /api/watchlist/starter` (`409` if not empty).
-- [ ] Onboarding UI (starter button) + the read-only watchlist strip.
+- [x] Watchlist storage, normalisation and the cap of 10.
+- [x] Starter list module + `POST /api/watchlist/starter` (`409` if not empty).
+- [x] Onboarding UI (starter button) + the read-only watchlist strip.
 
 ## Phase 3 — Alpaca client
 
